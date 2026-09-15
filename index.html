@@ -1,0 +1,511 @@
+<!doctype html>
+<html lang="th">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="SRT Express Project เว็บไซต์ต้นแบบสำหรับประเมินค่าขนส่งสินค้าทางรถไฟ ส่งได้ทั้งในสายเดียวกันและข้ามสาย"
+    />
+    <meta name="theme-color" content="#741f2b" />
+    <title>SRT Express Project | ส่งพัสดุไปกับรถไฟ</title>
+    <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;600;700;800&family=Prompt:wght@500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+    <script src="assets/calculator-core.js" defer></script>
+    <script src="script.js" defer></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main-content">ข้ามไปยังเนื้อหา</a>
+
+    <div class="prototype-bar">
+      <span class="status-dot" aria-hidden="true"></span>
+      เว็บไซต์ต้นแบบเพื่อการศึกษา ไม่ใช่ระบบรับฝากอย่างเป็นทางการของการรถไฟฯ
+    </div>
+
+    <header class="site-header" id="top">
+      <div class="nav-shell">
+        <a class="brand" href="#top" aria-label="SRT Express Project หน้าแรก">
+          <span class="brand-mark" aria-hidden="true">
+            <svg viewBox="0 0 48 48" role="img">
+              <path d="M9 34V18c0-6 5-10 15-10s15 4 15 10v16" />
+              <path d="M13 32h22M15 38h18M18 38l-5 6M30 38l5 6" />
+              <circle cx="17" cy="27" r="2" />
+              <circle cx="31" cy="27" r="2" />
+              <path d="M15 17h18" />
+            </svg>
+          </span>
+          <span>
+            <strong>SRT EXPRESS</strong>
+            <small>PROJECT</small>
+          </span>
+        </a>
+
+        <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="main-nav">
+          <span></span><span></span><span></span>
+          <span class="sr-only">เปิดเมนู</span>
+        </button>
+
+        <nav class="main-nav" id="main-nav" aria-label="เมนูหลัก">
+          <a href="#services">บริการ</a>
+          <a href="#network">เส้นทาง</a>
+          <a href="#how-it-works">วิธีส่ง</a>
+          <a href="#faq">คำถามที่พบบ่อย</a>
+          <a class="nav-cta" href="#calculator">คำนวณค่าขนส่ง</a>
+        </nav>
+      </div>
+    </header>
+
+    <main id="main-content">
+      <section class="hero">
+        <div class="hero-grid page-width">
+          <div class="hero-copy reveal">
+            <p class="eyebrow"><span></span> เชื่อมทุกภูมิภาคด้วยรางเดียวกัน</p>
+            <h1>ส่งสินค้าไปกับรถไฟ<br /><em>ข้ามสาย ก็ไปถึง</em></h1>
+            <p class="hero-lead">
+              แนวคิดบริการขนส่งพัสดุจากสถานีถึงสถานี เชื่อมต่อสายเหนือ อีสาน ตะวันออก และใต้
+              พร้อมประเมินค่าระวางได้ก่อนส่ง
+            </p>
+            <div class="hero-actions">
+              <a class="button button-primary" href="#calculator">
+                คำนวณราคา
+                <svg viewBox="0 0 20 20" aria-hidden="true"><path d="m7 4 6 6-6 6" /></svg>
+              </a>
+              <a class="button button-ghost" href="#network">ดูเส้นทางข้ามสาย</a>
+            </div>
+            <div class="trust-row" aria-label="จุดเด่นบริการต้นแบบ">
+              <div><strong>1–2 วัน*</strong><span>กรอบเวลาที่เสนอ</span></div>
+              <div><strong>4 สายหลัก</strong><span>เชื่อมผ่านสถานีกลาง</span></div>
+              <div><strong>ติดตามรายชิ้น</strong><span>ทุกจุดเปลี่ยนมือ</span></div>
+            </div>
+            <p class="micro-note">*เป้าหมายของแบบจำลอง ขึ้นอยู่กับขบวน จุดเปลี่ยนถ่าย และสถานีที่ให้บริการจริง</p>
+          </div>
+
+          <div class="hero-visual reveal" aria-label="ภาพประกอบขบวนรถไฟขนส่งสินค้า">
+            <div class="sun-orbit" aria-hidden="true"></div>
+            <div class="route-chip route-chip-north">สายเหนือ</div>
+            <div class="route-chip route-chip-east">สายตะวันออก</div>
+            <div class="train-card">
+              <div class="train-scene">
+                <div class="mountain mountain-a"></div>
+                <div class="mountain mountain-b"></div>
+                <div class="signal"><i></i><i></i><i></i></div>
+                <div class="train">
+                  <div class="locomotive">
+                    <span class="cab-window"></span>
+                    <span class="headlight"></span>
+                    <strong>EXPRESS</strong>
+                  </div>
+                  <div class="cargo cargo-a"><span>พัสดุ</span></div>
+                  <div class="cargo cargo-b"><span>ทั่วไทย</span></div>
+                </div>
+                <div class="track track-one"></div>
+                <div class="track track-two"></div>
+              </div>
+              <div class="dispatch-card">
+                <span class="dispatch-icon" aria-hidden="true">✓</span>
+                <span><small>พร้อมออกเดินทาง</small><strong>ตรวจรับครบทุกชิ้น</strong></span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="hero-rail" aria-hidden="true"><span></span></div>
+      </section>
+
+      <section class="quick-facts page-width" aria-label="อัตราค่าขนส่งเบื้องต้น">
+        <article class="fact-card">
+          <span class="fact-number">70</span>
+          <div><strong>บาท / ชิ้น</strong><p>ภายในสายเดียวกัน</p></div>
+        </article>
+        <article class="fact-card fact-card-featured">
+          <span class="fact-number">100</span>
+          <div><strong>บาท / ชิ้น</strong><p>ส่งข้ามสาย</p></div>
+        </article>
+        <article class="fact-rule">
+          <span class="rule-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><path d="M5 20V8M19 20V8M3 10l2-2 2 2M17 10l2-2 2 2M8 5h8M10 3 8 5l2 2M14 3l2 2-2 2" /></svg>
+          </span>
+          <div><strong>น้ำหนักไม่เกิน 2 กก.</strong><p>แต่ละด้านไม่เกิน 50 ซม.</p></div>
+        </article>
+      </section>
+
+      <section class="section services" id="services">
+        <div class="page-width">
+          <div class="section-heading reveal">
+            <p class="eyebrow"><span></span> รูปแบบบริการ</p>
+            <h2>พัสดุของคุณ เดินทางแบบไหน</h2>
+            <p>เลือกตามขนาด ประเภทสินค้า และเส้นทาง โดยแยกพัสดุ One Price ออกจากสินค้าที่ต้องประเมินเฉพาะงาน</p>
+          </div>
+
+          <div class="service-grid">
+            <article class="service-card service-card-primary reveal">
+              <span class="service-index">01</span>
+              <div class="service-icon" aria-hidden="true">
+                <svg viewBox="0 0 32 32"><path d="m5 10 11-6 11 6v13l-11 6-11-6Z" /><path d="m5 10 11 6 11-6M16 16v13M10 7l11 6" /></svg>
+              </div>
+              <h3>SRT Express One Price</h3>
+              <p>เหมาะกับเอกสาร เสื้อผ้า ของใช้ และของฝากขนาดเล็กที่ผ่านเกณฑ์น้ำหนักและขนาด</p>
+              <ul>
+                <li>รู้ราคาก่อนฝากส่ง</li>
+                <li>รองรับการส่งข้ามสาย</li>
+                <li>รับและส่งมอบที่สถานี</li>
+              </ul>
+              <a href="#calculator">ประเมินราคา <span>→</span></a>
+            </article>
+
+            <article class="service-card reveal">
+              <span class="service-index">02</span>
+              <div class="service-icon" aria-hidden="true">
+                <svg viewBox="0 0 32 32"><path d="M4 22h24M7 22V11h18v11M10 11V7h12v4M10 26h12" /><circle cx="10" cy="22" r="2" /><circle cx="22" cy="22" r="2" /></svg>
+              </div>
+              <h3>ห่อวัตถุทั่วไป</h3>
+              <p>สำหรับอะไหล่ เครื่องใช้ และสิ่งของที่เกินเกณฑ์ One Price โดยสถานีประเมินตามรายการจริง</p>
+              <ul>
+                <li>คิดตามชนิดและน้ำหนัก</li>
+                <li>ตรวจขนาดและระยะทาง</li>
+                <li>ยืนยันขบวนที่รับขน</li>
+              </ul>
+              <a href="#faq">ดูเงื่อนไข <span>→</span></a>
+            </article>
+
+            <article class="service-card reveal">
+              <span class="service-index">03</span>
+              <div class="service-icon" aria-hidden="true">
+                <svg viewBox="0 0 32 32"><path d="M4 22h24M8 22l3-8h10l3 8M13 14l2-5h5M18 9l3 5" /><circle cx="9" cy="23" r="4" /><circle cx="24" cy="23" r="4" /></svg>
+              </div>
+              <h3>สินค้าเฉพาะประเภท</h3>
+              <p>รถจักรยานยนต์ ผลผลิตเกษตร ของขนาดใหญ่ และสินค้าเหมาคัน ต้องใช้เงื่อนไขเฉพาะ</p>
+              <ul>
+                <li>แยกค่าขึ้น–ลงสินค้า</li>
+                <li>ตรวจเอกสารประกอบ</li>
+                <li>ขอใบเสนอราคาจากสถานี</li>
+              </ul>
+              <a href="#faq">ดูข้อควรรู้ <span>→</span></a>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="section network-section" id="network">
+        <div class="page-width network-grid">
+          <div class="network-copy reveal">
+            <p class="eyebrow eyebrow-light"><span></span> เครือข่ายข้ามสาย</p>
+            <h2>เปลี่ยนสายอย่างมีแผน<br />ไม่ปล่อยพัสดุหลุดจากระบบ</h2>
+            <p>
+              การส่งข้ามสายเชื่อมขบวนผ่านจุดเปลี่ยนถ่ายกลาง พร้อมบันทึกเวลา สภาพสินค้า
+              และผู้รับผิดชอบทุกครั้งที่เปลี่ยนมือ
+            </p>
+            <div class="network-legend">
+              <span><i class="line-north"></i>สายเหนือ</span>
+              <span><i class="line-northeast"></i>สายอีสาน</span>
+              <span><i class="line-east"></i>สายตะวันออก</span>
+              <span><i class="line-south"></i>สายใต้</span>
+            </div>
+            <a class="button button-light" href="#calculator">ลองคำนวณเส้นทาง</a>
+          </div>
+
+          <div class="rail-map reveal" aria-label="แผนผังแนวคิดการเชื่อมสี่สายรถไฟ">
+            <svg viewBox="0 0 600 500" role="img" aria-labelledby="mapTitle mapDesc">
+              <title id="mapTitle">แผนผังเครือข่ายส่งพัสดุข้ามสาย</title>
+              <desc id="mapDesc">สายเหนือ อีสาน ตะวันออก และใต้ เชื่อมผ่านจุดเปลี่ยนถ่ายกลาง</desc>
+              <path class="map-line north" d="M290 230C270 190 220 150 180 70" />
+              <path class="map-line northeast" d="M310 230C355 170 405 145 480 95" />
+              <path class="map-line east" d="M325 255C390 260 455 285 540 320" />
+              <path class="map-line south" d="M295 280C280 340 300 390 330 460" />
+              <g class="map-node hub" transform="translate(300 250)">
+                <circle r="44" />
+                <path d="M-17 10V-10c0-13 34-13 34 0v20M-12 8h24M-10 16h20" />
+                <text y="67">จุดเชื่อมต่อกลาง</text>
+              </g>
+              <g class="map-stop" transform="translate(178 70)"><circle r="9" /><text x="-8" y="-22">เชียงใหม่</text></g>
+              <g class="map-stop" transform="translate(480 95)"><circle r="9" /><text x="-8" y="-22">อุบลราชธานี</text></g>
+              <g class="map-stop" transform="translate(540 320)"><circle r="9" /><text x="-95" y="32">อรัญประเทศ</text></g>
+              <g class="map-stop" transform="translate(330 460)"><circle r="9" /><text x="18" y="5">หาดใหญ่</text></g>
+              <g class="map-transfer" transform="translate(390 180)"><rect x="-49" y="-17" width="98" height="34" rx="17" /><text y="6">ตรวจรับทุกจุด</text></g>
+            </svg>
+          </div>
+        </div>
+      </section>
+
+      <section class="section calculator-section" id="calculator">
+        <div class="page-width calculator-layout">
+          <div class="calculator-intro reveal">
+            <p class="eyebrow"><span></span> เครื่องคำนวณ</p>
+            <h2>เช็กราคาให้ชัด<br />ก่อนนำพัสดุไปสถานี</h2>
+            <p>ระบบจะตรวจสายรถไฟ น้ำหนัก และขนาด แล้วแสดงค่าระวางกับค่าใช้จ่ายเสริมแยกกัน</p>
+            <div class="calculator-note">
+              <span aria-hidden="true">i</span>
+              <p><strong>อัตราอ้างอิง</strong> ข่าว SRT Express One Price เดือนสิงหาคม 2569 ตามข้อมูลในรายงานที่แนบมา โปรดตรวจสอบกับสถานีก่อนใช้บริการจริง</p>
+            </div>
+            <div class="rail-stamp" aria-hidden="true"><span>SRT</span><strong>EXPRESS</strong><small>EST. 2569</small></div>
+          </div>
+
+          <div class="calculator-card reveal">
+            <div class="calculator-tabs" role="tablist" aria-label="ประเภทการคำนวณ">
+              <button class="tab is-active" type="button" role="tab" aria-selected="true">พัสดุ One Price</button>
+              <button class="tab" type="button" role="tab" aria-selected="false" data-disabled-tab>สินค้าเฉพาะประเภท</button>
+            </div>
+
+            <form id="shipping-form" novalidate>
+              <div class="form-section">
+                <div class="form-section-title"><span>1</span><strong>เลือกสถานี</strong></div>
+                <div class="form-grid two-columns route-selectors">
+                  <label>
+                    <span>สถานีต้นทาง</span>
+                    <select id="origin" name="origin" required aria-describedby="origin-error">
+                      <option value="">เลือกสถานีต้นทาง</option>
+                    </select>
+                    <small class="field-error" id="origin-error"></small>
+                  </label>
+                  <button class="swap-button" id="swap-route" type="button" aria-label="สลับสถานีต้นทางและปลายทาง">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7h11l-3-3M17 17H6l3 3M18 7l-3 3M6 17l3-3" /></svg>
+                  </button>
+                  <label>
+                    <span>สถานีปลายทาง</span>
+                    <select id="destination" name="destination" required aria-describedby="destination-error">
+                      <option value="">เลือกสถานีปลายทาง</option>
+                    </select>
+                    <small class="field-error" id="destination-error"></small>
+                  </label>
+                </div>
+                <div class="route-preview" id="route-preview" hidden>
+                  <span class="route-badge" id="route-badge"></span>
+                  <p id="route-description"></p>
+                </div>
+              </div>
+
+              <div class="form-section">
+                <div class="form-section-title"><span>2</span><strong>รายละเอียดพัสดุ</strong></div>
+                <div class="form-grid parcel-grid">
+                  <label>
+                    <span>จำนวน</span>
+                    <div class="input-suffix"><input id="pieces" name="pieces" type="number" min="1" max="100" value="1" inputmode="numeric" required /><b>ชิ้น</b></div>
+                  </label>
+                  <label>
+                    <span>น้ำหนักต่อชิ้น</span>
+                    <div class="input-suffix"><input id="weight" name="weight" type="number" min="0.1" step="0.1" value="1" inputmode="decimal" required /><b>กก.</b></div>
+                  </label>
+                  <fieldset class="dimension-fieldset">
+                    <legend>ขนาดต่อชิ้น (ยาว × กว้าง × สูง)</legend>
+                    <div class="dimension-inputs">
+                      <div class="input-suffix"><input id="length" name="length" type="number" min="1" value="30" aria-label="ความยาว" inputmode="decimal" required /><b>ซม.</b></div>
+                      <span>×</span>
+                      <div class="input-suffix"><input id="width" name="width" type="number" min="1" value="20" aria-label="ความกว้าง" inputmode="decimal" required /><b>ซม.</b></div>
+                      <span>×</span>
+                      <div class="input-suffix"><input id="height" name="height" type="number" min="1" value="15" aria-label="ความสูง" inputmode="decimal" required /><b>ซม.</b></div>
+                    </div>
+                  </fieldset>
+                </div>
+                <div class="limit-meter" id="limit-meter">
+                  <div><span>เกณฑ์น้ำหนัก</span><strong id="weight-status">ผ่านเกณฑ์</strong></div>
+                  <div class="meter"><i id="weight-meter"></i></div>
+                  <div><span>เกณฑ์ขนาด</span><strong id="size-status">ผ่านเกณฑ์</strong></div>
+                  <div class="meter"><i id="size-meter"></i></div>
+                </div>
+              </div>
+
+              <div class="form-section optional-costs">
+                <button class="optional-toggle" id="optional-toggle" type="button" aria-expanded="false" aria-controls="optional-panel">
+                  <span><strong>ค่าใช้จ่ายประกอบการวางแผน</strong><small>ไม่ใช่ค่าระวางทางการ</small></span>
+                  <svg viewBox="0 0 20 20" aria-hidden="true"><path d="m5 8 5 5 5-5" /></svg>
+                </button>
+                <div class="optional-panel" id="optional-panel" hidden>
+                  <label class="check-row">
+                    <input id="packing" name="packing" type="checkbox" />
+                    <span class="custom-check"></span>
+                    <span><strong>กล่องและวัสดุบรรจุ</strong><small>ประมาณ 15 บาทต่อชิ้น</small></span>
+                  </label>
+                  <div class="form-grid two-columns">
+                    <label>
+                      <span>ค่าเดินทางไปส่งที่สถานี</span>
+                      <div class="input-suffix"><input id="origin-access" name="originAccess" type="number" min="0" value="0" inputmode="decimal" /><b>บาท</b></div>
+                    </label>
+                    <label>
+                      <span>ค่าเดินทางไปรับปลายทาง</span>
+                      <div class="input-suffix"><input id="destination-access" name="destinationAccess" type="number" min="0" value="0" inputmode="decimal" /><b>บาท</b></div>
+                    </label>
+                  </div>
+                </div>
+              </div>
+
+              <button class="button button-primary calculate-button" type="submit">
+                คำนวณค่าขนส่ง
+                <svg viewBox="0 0 20 20" aria-hidden="true"><path d="m7 4 6 6-6 6" /></svg>
+              </button>
+            </form>
+
+            <div class="quote-result" id="quote-result" hidden aria-live="polite">
+              <div class="result-topline">
+                <span class="result-route" id="result-route"></span>
+                <button id="edit-quote" type="button">แก้ไขข้อมูล</button>
+              </div>
+              <div class="result-price">
+                <p>ค่าใช้จ่ายรวมโดยประมาณ</p>
+                <div><strong id="grand-total">0</strong><span>บาท</span></div>
+              </div>
+              <dl class="price-breakdown">
+                <div><dt>ค่าระวาง One Price</dt><dd id="freight-total">0 บาท</dd></div>
+                <div><dt>กล่องและวัสดุ</dt><dd id="packing-total">0 บาท</dd></div>
+                <div><dt>ค่าเดินทางต้นทาง–ปลายทาง</dt><dd id="access-total">0 บาท</dd></div>
+              </dl>
+              <div class="delivery-estimate">
+                <span class="delivery-icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" /><path d="M12 7v5l3 2" /></svg>
+                </span>
+                <span><small>กรอบเวลาตามแบบจำลอง</small><strong id="delivery-time">ภายใน 24 ชั่วโมง*</strong></span>
+              </div>
+              <p class="result-disclaimer" id="result-disclaimer">*เป็นเพียงการประเมิน โปรดให้สถานียืนยันราคา เส้นทาง ขบวน และเวลาส่งมอบก่อนฝากส่งจริง</p>
+              <button class="button button-dark" id="print-quote" type="button">พิมพ์ใบประเมินราคา</button>
+            </div>
+
+            <div class="manual-quote" id="manual-quote" hidden aria-live="polite">
+              <span class="manual-icon" aria-hidden="true">!</span>
+              <h3>พัสดุนี้อยู่นอกเกณฑ์ One Price</h3>
+              <p id="manual-reason"></p>
+              <p>สถานีต้องตรวจประเภทสินค้า น้ำหนัก ขนาด ระยะทาง และขบวนที่รับขน เพื่อคำนวณค่าระวางเฉพาะรายการ</p>
+              <button class="button button-dark" id="edit-manual" type="button">กลับไปแก้ไขข้อมูล</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section safety-section">
+        <div class="page-width safety-grid">
+          <div class="safety-visual reveal">
+            <div class="parcel-stack" aria-hidden="true">
+              <div class="parcel parcel-large"><span>SRTX</span><i></i></div>
+              <div class="parcel parcel-small"><span>✓</span></div>
+              <div class="scanner-beam"></div>
+            </div>
+            <div class="scan-label"><span></span> ตรวจพบรหัสตรงกัน</div>
+          </div>
+          <div class="safety-copy reveal">
+            <p class="eyebrow"><span></span> ความปลอดภัยตลอดทาง</p>
+            <h2>ทุกการเปลี่ยนมือ<br />ต้องมีหลักฐาน</h2>
+            <p>แนวคิดการควบคุมสินค้าข้ามสายช่วยให้ตรวจสอบย้อนหลังได้ตั้งแต่รับฝากจนถึงส่งมอบ</p>
+            <ol class="safety-list">
+              <li><span>01</span><div><strong>ตรวจบรรจุภัณฑ์ก่อนรับ</strong><p>ชั่ง วัด ถ่ายภาพ และบันทึกสภาพภายนอก</p></div></li>
+              <li><span>02</span><div><strong>ติดรหัสประจำชิ้น</strong><p>เชื่อมข้อมูลสถานี ขบวน และผู้รับผิดชอบ</p></div></li>
+              <li><span>03</span><div><strong>ยืนยันเมื่อเปลี่ยนสาย</strong><p>สแกนรับ–ส่ง ตรวจจำนวน และบันทึกเวลา</p></div></li>
+              <li><span>04</span><div><strong>ตรวจสภาพก่อนส่งมอบ</strong><p>ยืนยันผู้รับและเก็บหลักฐานการรับสินค้า</p></div></li>
+            </ol>
+          </div>
+        </div>
+      </section>
+
+      <section class="section process-section" id="how-it-works">
+        <div class="page-width">
+          <div class="section-heading centered reveal">
+            <p class="eyebrow"><span></span> ขั้นตอนการใช้บริการ</p>
+            <h2>จากมือคุณ ถึงสถานีปลายทาง</h2>
+          </div>
+          <div class="process-line">
+            <article class="process-step reveal">
+              <span class="step-number">01</span>
+              <div class="step-icon"><svg viewBox="0 0 32 32"><path d="M7 5h18v22H7zM11 10h10M11 15h10M11 20h6" /></svg></div>
+              <h3>ประเมินและเตรียม</h3>
+              <p>เลือกสถานี ตรวจน้ำหนัก ขนาด ประเภทสินค้า และบรรจุให้แข็งแรง</p>
+            </article>
+            <article class="process-step reveal">
+              <span class="step-number">02</span>
+              <div class="step-icon"><svg viewBox="0 0 32 32"><path d="M5 12 16 6l11 6v13H5zM10 25v-8h12v8M5 13h22" /></svg></div>
+              <h3>ฝากส่งที่สถานี</h3>
+              <p>เจ้าหน้าที่ตรวจรับ ยืนยันราคา เส้นทาง ขบวน และออกหลักฐานรับฝาก</p>
+            </article>
+            <article class="process-step reveal">
+              <span class="step-number">03</span>
+              <div class="step-icon"><svg viewBox="0 0 32 32"><path d="M4 21h24M7 21V11h15l5 5v5M11 25a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM23 25a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" /></svg></div>
+              <h3>เดินทางและเชื่อมต่อ</h3>
+              <p>บันทึกทุกเหตุการณ์ โดยเฉพาะจุดเปลี่ยนถ่ายสำหรับการส่งข้ามสาย</p>
+            </article>
+            <article class="process-step reveal">
+              <span class="step-number">04</span>
+              <div class="step-icon"><svg viewBox="0 0 32 32"><path d="M6 16 16 6l10 10v11H6zM12 27v-8h8v8M12 14l3 3 6-6" /></svg></div>
+              <h3>รับที่ปลายทาง</h3>
+              <p>สถานีแจ้งผู้รับ ตรวจสภาพสินค้า และยืนยันตัวตนก่อนส่งมอบ</p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="section faq-section" id="faq">
+        <div class="page-width faq-layout">
+          <div class="faq-heading reveal">
+            <p class="eyebrow"><span></span> ข้อควรรู้</p>
+            <h2>คำถามที่พบบ่อย</h2>
+            <p>ข้อมูลสำคัญที่ควรตรวจสอบก่อนนำสินค้าไปฝากส่ง</p>
+          </div>
+          <div class="accordion reveal">
+            <details open>
+              <summary>ส่งข้ามสายหมายถึงอะไร?<span></span></summary>
+              <div><p>คือการที่สถานีต้นทางและปลายทางอยู่คนละสายหลัก เช่น เชียงใหม่ (สายเหนือ) ไปอุบลราชธานี (สายตะวันออกเฉียงเหนือ) จึงต้องวางแผนเชื่อมขบวนและเปลี่ยนถ่าย ณ จุดกลาง</p></div>
+            </details>
+            <details>
+              <summary>ราคา 70 และ 100 บาทใช้กับสินค้าใด?<span></span></summary>
+              <div><p>ใช้กับพัสดุ One Price น้ำหนักไม่เกิน 2 กิโลกรัม และขนาดแต่ละด้านไม่เกิน 50 เซนติเมตร ภายใต้พื้นที่และเงื่อนไขที่ร่วมบริการ ราคา 70 บาทสำหรับในสายเดียวกัน และ 100 บาทสำหรับข้ามสาย ตามข้อมูลเดือนสิงหาคม 2569 ในรายงาน</p></div>
+            </details>
+            <details>
+              <summary>ถ้าน้ำหนักหรือขนาดเกินเกณฑ์ คิดราคาอย่างไร?<span></span></summary>
+              <div><p>ไม่สามารถใช้ราคา One Price ได้ ต้องให้สถานีประเมินประเภทบริการตามชนิดสินค้า น้ำหนัก ขนาด ระยะทาง และขบวนที่รับขน เว็บไซต์นี้จึงไม่สร้างราคาสมมติให้กับสินค้านอกเกณฑ์</p></div>
+            </details>
+            <details>
+              <summary>เว็บไซต์นี้ใช้จองหรือชำระเงินจริงได้หรือไม่?<span></span></summary>
+              <div><p>ยังไม่ได้ เว็บไซต์นี้เป็นต้นแบบเพื่อการศึกษาและการวางแผน ค่าบริการ เส้นทาง และเวลาที่แสดงต้องได้รับการยืนยันจากสถานีหรือการรถไฟแห่งประเทศไทยก่อนใช้บริการจริง</p></div>
+            </details>
+          </div>
+        </div>
+      </section>
+
+      <section class="cta-section">
+        <div class="page-width cta-card reveal">
+          <div>
+            <p class="eyebrow eyebrow-light"><span></span> วางแผนก่อนออกเดินทาง</p>
+            <h2>รู้เส้นทาง รู้ราคา<br />ส่งของได้มั่นใจกว่า</h2>
+          </div>
+          <a class="button button-light" href="#calculator">เริ่มคำนวณค่าขนส่ง</a>
+          <div class="cta-train" aria-hidden="true"><span></span><i></i><i></i></div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="page-width footer-grid">
+        <div class="footer-brand">
+          <a class="brand brand-light" href="#top">
+            <span class="brand-mark" aria-hidden="true">
+              <svg viewBox="0 0 48 48"><path d="M9 34V18c0-6 5-10 15-10s15 4 15 10v16" /><path d="M13 32h22M15 38h18M18 38l-5 6M30 38l5 6" /><circle cx="17" cy="27" r="2" /><circle cx="31" cy="27" r="2" /><path d="M15 17h18" /></svg>
+            </span>
+            <span><strong>SRT EXPRESS</strong><small>PROJECT</small></span>
+          </a>
+          <p>ต้นแบบระบบประเมินค่าขนส่งสินค้าทางรถไฟ เพื่อศึกษาความเป็นไปได้ของบริการส่งข้ามสายภายใน 1–2 วัน</p>
+        </div>
+        <div class="footer-links">
+          <strong>สำรวจเว็บไซต์</strong>
+          <a href="#services">บริการ</a>
+          <a href="#network">เครือข่าย</a>
+          <a href="#calculator">คำนวณราคา</a>
+          <a href="#how-it-works">วิธีใช้บริการ</a>
+        </div>
+        <div class="footer-links">
+          <strong>ข้อมูลสำคัญ</strong>
+          <a href="#faq">เงื่อนไข One Price</a>
+          <a href="#faq">สินค้านอกเกณฑ์</a>
+          <a href="#faq">คำชี้แจงเว็บไซต์</a>
+        </div>
+        <div class="footer-notice">
+          <strong>หมายเหตุ</strong>
+          <p>ไม่มีความเกี่ยวข้องอย่างเป็นทางการกับการรถไฟแห่งประเทศไทย ข้อมูลอ้างอิงจากรายงานโครงการและควรตรวจสอบอีกครั้งก่อนใช้งานจริง</p>
+        </div>
+      </div>
+      <div class="footer-bottom page-width">
+        <span>© 2569 SRT Express Project</span>
+        <span>ออกแบบเพื่อการศึกษา · Made for rail freight</span>
+      </div>
+    </footer>
+  </body>
+</html>

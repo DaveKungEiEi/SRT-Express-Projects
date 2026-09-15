@@ -200,7 +200,7 @@
             <p class="eyebrow eyebrow-light"><span></span> เครือข่ายข้ามสาย</p>
             <h2>เปลี่ยนสายอย่างมีแผน<br />ไม่ปล่อยพัสดุหลุดจากระบบ</h2>
             <p>
-              การส่งข้ามสายเชื่อมขบวนผ่านจุดเปลี่ยนถ่ายกลาง พร้อมบันทึกเวลา สภาพสินค้า
+              การส่งข้ามสายเชื่อมขบวนผ่านสถานีชุมทางบางซื่อ พร้อมบันทึกเวลา สภาพสินค้า
               และผู้รับผิดชอบทุกครั้งที่เปลี่ยนมือ
             </p>
             <div class="network-legend">
@@ -213,10 +213,10 @@
             <a class="button button-light" href="#calculator">ลองคำนวณเส้นทาง</a>
           </div>
 
-          <div class="rail-map reveal" aria-label="แผนผังแนวคิดการเชื่อมสี่สายรถไฟ">
+          <div class="rail-map reveal" aria-label="แผนผังแนวคิดการเชื่อมสายรถไฟผ่านชุมทางบางซื่อ">
             <svg viewBox="0 0 600 500" role="img" aria-labelledby="mapTitle mapDesc">
               <title id="mapTitle">แผนผังเครือข่ายส่งพัสดุข้ามสาย</title>
-              <desc id="mapDesc">สายเหนือ อีสาน ตะวันออก และใต้ เชื่อมผ่านจุดเปลี่ยนถ่ายกลาง</desc>
+              <desc id="mapDesc">สายเหนือ อีสาน ตะวันออก และใต้ เชื่อมผ่านสถานีชุมทางบางซื่อ</desc>
               <path class="map-line north" d="M290 230C270 190 220 150 180 70" />
               <path class="map-line northeast" d="M310 230C355 170 405 145 480 95" />
               <path class="map-line east" d="M325 255C390 260 455 285 540 320" />
@@ -224,7 +224,7 @@
               <g class="map-node hub" transform="translate(300 250)">
                 <circle r="44" />
                 <path d="M-17 10V-10c0-13 34-13 34 0v20M-12 8h24M-10 16h20" />
-                <text y="67">จุดเชื่อมต่อกลาง</text>
+                <text y="67">ชุมทางบางซื่อ</text>
               </g>
               <g class="map-stop" transform="translate(178 70)"><circle r="9" /><text x="-8" y="-22">เชียงใหม่</text></g>
               <g class="map-stop" transform="translate(480 95)"><circle r="9" /><text x="-8" y="-22">อุบลราชธานี</text></g>
@@ -306,9 +306,9 @@
                     </div>
                   </fieldset>
                   <label class="distance-field">
-                    <span>ระยะทางทางราง (ถ้าทราบ)</span>
+                    <span>ระยะทางที่สถานียืนยัน (ถ้าทราบ)</span>
                     <div class="input-suffix"><input id="rail-distance" name="railDistance" type="number" min="1" step="1" inputmode="decimal" placeholder="ให้ระบบประมาณ" /><b>กม.</b></div>
-                    <small id="distance-hint">เว้นว่างเพื่อให้ระบบประมาณจากพิกัดในทะเบียนสถานี</small>
+                    <small id="distance-hint">เว้นว่างเพื่อให้ระบบประมาณจากแนวโครงข่ายและแสดงทุกสถานีที่ผ่าน</small>
                   </label>
                 </div>
                 <div class="limit-meter" id="limit-meter">
@@ -343,7 +343,7 @@
                 </div>
               </div>
 
-              <button class="button button-primary calculate-button" type="submit">
+              <button class="button button-outline calculate-button" type="submit">
                 คำนวณค่าขนส่ง
                 <svg viewBox="0 0 20 20" aria-hidden="true"><path d="m7 4 6 6-6 6" /></svg>
               </button>
@@ -353,6 +353,16 @@
               <div class="result-topline">
                 <span class="result-route" id="result-route"></span>
                 <button id="edit-quote" type="button">แก้ไขข้อมูล</button>
+              </div>
+              <div class="route-metrics" aria-label="ข้อมูลเส้นทางโดยประมาณ">
+                <div class="route-metric">
+                  <small>ระยะทาง</small>
+                  <p><strong id="journey-distance">0</strong><span>กม.</span></p>
+                </div>
+                <div class="route-metric">
+                  <small>สถานีบนแนวเส้นทาง</small>
+                  <p><strong id="journey-stations">0</strong><span>แห่ง</span></p>
+                </div>
               </div>
               <div class="result-price">
                 <p id="result-mode">ค่าใช้จ่ายรวมโดยประมาณ</p>
@@ -374,6 +384,15 @@
                 </span>
                 <span><small>กรอบเวลาตามแบบจำลอง</small><strong id="delivery-time">ภายใน 24 ชั่วโมง*</strong></span>
               </div>
+              <details class="route-detail" open>
+                <summary>
+                  <span>สถานีที่รถผ่าน</span>
+                  <b id="journey-summary">ลำดับเส้นทางโดยประมาณ</b>
+                  <svg viewBox="0 0 20 20" aria-hidden="true"><path d="m5 8 5 5 5-5" /></svg>
+                </summary>
+                <ol class="route-timeline" id="route-timeline"></ol>
+                <p class="route-data-note" id="route-data-note"></p>
+              </details>
               <p class="result-disclaimer" id="result-disclaimer">*เป็นเพียงการประเมิน โปรดให้สถานียืนยันราคา เส้นทาง ขบวน และเวลาส่งมอบก่อนฝากส่งจริง</p>
               <button class="button button-dark" id="print-quote" type="button">พิมพ์ใบประเมินราคา</button>
             </div>
@@ -458,7 +477,7 @@
           <div class="accordion reveal">
             <details open>
               <summary>ส่งข้ามสายหมายถึงอะไร?<span></span></summary>
-              <div><p>คือการที่สถานีต้นทางและปลายทางอยู่คนละสายหลัก เช่น เชียงใหม่ (สายเหนือ) ไปอุบลราชธานี (สายตะวันออกเฉียงเหนือ) จึงต้องวางแผนเชื่อมขบวนและเปลี่ยนถ่าย ณ จุดกลาง</p></div>
+              <div><p>คือการที่สถานีต้นทางและปลายทางอยู่คนละสายหลัก เช่น เชียงใหม่ (สายเหนือ) ไปอุบลราชธานี (สายตะวันออกเฉียงเหนือ) แบบจำลองนี้จะเชื่อมเส้นทางผ่านสถานีชุมทางบางซื่อเป็นจุดศูนย์กลาง และแสดงทุกสถานีบนแนวทางที่คำนวณ</p></div>
             </details>
             <details>
               <summary>ราคา 70 และ 100 บาทใช้กับสินค้าใด?<span></span></summary>
@@ -466,7 +485,7 @@
             </details>
             <details>
               <summary>ถ้าน้ำหนักหรือขนาดเกินเกณฑ์ คิดราคาอย่างไร?<span></span></summary>
-              <div><p>ระบบจะประมาณระยะทางทางรางจากพิกัดสถานีหรือใช้ระยะทางที่ผู้ใช้กรอก ปัดน้ำหนักขึ้นเป็นกิโลกรัมเต็ม แล้วคำนวณฐานอัตราธรรมดา อัตราด่วน 2 เท่า ค่าธรรมเนียมตามโครงสร้างเดิม 50% ของอัตราด่วน และขั้นต่ำ 60 บาทต่อชิ้น ตัวเลขนี้เป็นเพียงงบประมาณ เพราะตารางเต็ม สถานะการใช้ปัจจุบัน ชนิดสินค้า และสถานีที่รับฝากต้องให้ รฟท. ยืนยัน</p></div>
+              <div><p>ระบบจะสร้างลำดับสถานีจากโครงข่ายสายหลักและสายสาขา ประมาณระยะทางจากพิกัด หรือนำระยะทางที่ผู้ใช้กรอกมาใช้เป็นยอดรวม จากนั้นปัดน้ำหนักขึ้นเป็นกิโลกรัมเต็ม แล้วคำนวณฐานอัตราธรรมดา อัตราด่วน 2 เท่า ค่าธรรมเนียมตามโครงสร้างเดิม 50% ของอัตราด่วน และขั้นต่ำ 60 บาทต่อชิ้น ตัวเลขนี้เป็นเพียงงบประมาณ เพราะตารางเต็ม สถานะการใช้ปัจจุบัน ชนิดสินค้า และสถานีที่รับฝากต้องให้ รฟท. ยืนยัน</p></div>
             </details>
             <details>
               <summary>รายชื่อสถานีมาจากไหน และทุกแห่งรับพัสดุหรือไม่?<span></span></summary>

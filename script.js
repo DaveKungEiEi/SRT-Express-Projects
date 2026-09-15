@@ -9,7 +9,8 @@ const {
   getRoute,
   getEligibility,
   calculateCosts,
-  estimateRailDistance,
+  getRouteJourney,
+  routeHubName,
   calculateLegacyFreightEstimate,
 } = window.SRTCalculator;
 
@@ -58,6 +59,11 @@ const elements = {
   minimumTotal: document.querySelector("#minimum-total"),
   deliveryTime: document.querySelector("#delivery-time"),
   resultDisclaimer: document.querySelector("#result-disclaimer"),
+  journeyDistance: document.querySelector("#journey-distance"),
+  journeyStations: document.querySelector("#journey-stations"),
+  journeySummary: document.querySelector("#journey-summary"),
+  routeTimeline: document.querySelector("#route-timeline"),
+  routeDataNote: document.querySelector("#route-data-note"),
 };
 
 const nameCounts = stations.reduce((counts, station) => {
@@ -97,12 +103,12 @@ function selectedRoute() {
 function updateDistanceHint() {
   const selection = selectedRoute();
   if (!selection) {
-    elements.distanceHint.textContent = "เว้นว่างเพื่อให้ระบบประมาณจากพิกัดในทะเบียนสถานี";
+    elements.distanceHint.textContent = "เว้นว่างเพื่อให้ระบบประมาณจากแนวโครงข่ายและแสดงทุกสถานีที่ผ่าน";
     return;
   }
-  const estimate = estimateRailDistance(selection.origin, selection.destination);
-  elements.distanceHint.textContent = estimate
-    ? `ระบบจะใช้ประมาณ ${estimate.kilometers} กม. (${estimate.basis}) หากไม่กรอกเอง`
+  const journey = getRouteJourney(selection.origin, selection.destination);
+  elements.distanceHint.textContent = journey
+    ? `ระบบจะใช้ประมาณ ${journey.kilometers.toLocaleString("th-TH")} กม. ผ่าน ${journey.stops.length.toLocaleString("th-TH")} สถานี (${journey.basis})`
     : "เส้นทางนี้ไม่มีพิกัดเพียงพอ กรุณากรอกระยะทางทางราง";
 }
 
@@ -204,8 +210,77 @@ function showLegacyRows(show) {
   });
 }
 
-function renderOnePrice(selection, costs) {
+function formatKilometers(value) {
+  const rounded = value < 10 ? Math.round(value * 10) / 10 : Math.round(value);
+  return rounded.toLocaleString("th-TH", { maximumFractionDigits: 1 });
+}
+
+function renderJourney(journey, distanceOverride = 0) {
+  const displayedDistance = distanceOverride || journey.kilometers;
+  const scale = distanceOverride && journey.rawKilometers
+    ? displayedDistance / journey.rawKilometers
+    : 1;
+  elements.journeyDistance.textContent = displayedDistance.toLocaleString("th-TH", { maximumFractionDigits: 1 });
+  elements.journeyStations.textContent = journey.stops.length.toLocaleString("th-TH");
+  elements.journeySummary.textContent = journey.forcedHub
+    ? `ผ่าน${routeHubName} · ${journey.stops.length.toLocaleString("th-TH")} สถานี`
+    : `แนวเส้นทางเดียวกัน · ${journey.stops.length.toLocaleString("th-TH")} สถานี`;
+  elements.routeTimeline.replaceChildren();
+
+  let cumulativeDistance = 0;
+  journey.stops.forEach((stop, index) => {
+    const distanceFromPrevious = stop.distanceFromPrevious * scale;
+    cumulativeDistance += distanceFromPrevious;
+    const isOrigin = index === 0;
+    const isDestination = index === journey.stops.length - 1;
+    const isHub = stop.station.id === journey.hubId;
+    const item = document.createElement("li");
+    item.className = "route-stop";
+    if (isOrigin) item.classList.add("is-origin");
+    if (isDestination) item.classList.add("is-destination");
+    if (isHub) item.classList.add("is-hub");
+    if (stop.transfer) item.classList.add("is-transfer");
+
+    const marker = document.createElement("span");
+    marker.className = "route-stop-marker";
+    marker.setAttribute("aria-hidden", "true");
+    const content = document.createElement("div");
+    content.className = "route-stop-content";
+    const heading = document.createElement("p");
+    heading.className = "route-stop-name";
+    heading.textContent = stop.station.name;
+    if (isHub) {
+      const badge = document.createElement("b");
+      badge.textContent = "จุดศูนย์กลาง";
+      heading.append(badge);
+    }
+    const meta = document.createElement("small");
+    if (isOrigin) {
+      meta.textContent = "สถานีต้นทาง";
+    } else if (stop.transfer) {
+      meta.textContent = `${stop.transferLabel} · ประมาณ ${formatKilometers(distanceFromPrevious)} กม.`;
+    } else {
+      meta.textContent = `จากสถานีก่อนหน้า ${formatKilometers(distanceFromPrevious)} กม. · สะสม ${formatKilometers(cumulativeDistance)} กม.`;
+    }
+    if (isDestination) meta.textContent += " · สถานีปลายทาง";
+    content.append(heading, meta);
+    item.append(marker, content);
+    elements.routeTimeline.append(item);
+  });
+
+  const distanceBasis = distanceOverride
+    ? "ระยะทางรวมยึดตามค่าที่ผู้ใช้กรอก และกระจายตามสัดส่วนของแต่ละช่วง"
+    : "ระยะทางเป็นค่าประมาณจากแนวโครงข่ายและพิกัดสถานี";
+  const transferNote = journey.transferCount
+    ? " เส้นทางสายแม่กลองมีช่วงเปลี่ยนถ่ายที่ไม่ได้ต่อเนื่องด้วยราง"
+    : "";
+  elements.routeDataNote.textContent =
+    `${distanceBasis} รายการนี้แสดงสถานีบนแนวทางที่ระบบจำลอง ไม่ได้หมายความว่าขบวนสินค้าจะหยุดรับ–ส่งทุกสถานี.${transferNote}`;
+}
+
+function renderOnePrice(selection, costs, journey) {
   showLegacyRows(false);
+  renderJourney(journey, numberValue(elements.railDistance));
   elements.resultMode.textContent = "ผ่านเกณฑ์ SRT Express One Price";
   elements.freightLabel.textContent = "ค่าระวาง One Price";
   elements.freightTotal.textContent = formatBaht(costs.freight);
@@ -216,27 +291,27 @@ function renderOnePrice(selection, costs) {
     "*เป็นแบบจำลองโครงการ โปรดให้สถานียืนยันพื้นที่บริการ ราคา ขบวน และเวลาส่งมอบก่อนฝากส่งจริง";
 }
 
-function renderLegacyEstimate(selection, baseCosts, weight, dimensions) {
+function renderLegacyEstimate(selection, baseCosts, weight, dimensions, journey) {
   const enteredDistance = numberValue(elements.railDistance);
-  const automaticDistance = estimateRailDistance(selection.origin, selection.destination);
-  if (!enteredDistance && !automaticDistance) {
+  if (!enteredDistance && !journey) {
     elements.manualReason.textContent = "ไม่พบพิกัดเพียงพอสำหรับประมาณระยะทาง กรุณากลับไปกรอกระยะทางทางราง";
     elements.quoteResult.hidden = true;
     elements.manualQuote.hidden = false;
     return false;
   }
 
-  const distanceKm = enteredDistance || automaticDistance.kilometers;
+  const distanceKm = enteredDistance || journey.kilometers;
   const estimate = calculateLegacyFreightEstimate({
     distanceKm,
     weight,
     pieces: baseCosts.pieces,
   });
   const total = estimate.freight + baseCosts.packing + baseCosts.access;
-  const distanceBasis = enteredDistance ? "ระยะทางที่ผู้ใช้กรอก" : automaticDistance.basis;
+  const distanceBasis = enteredDistance ? "ระยะทางที่ผู้ใช้กรอก" : journey.basis;
   const oversized = dimensions.some((value) => value > 50);
 
   showLegacyRows(true);
+  renderJourney(journey, enteredDistance);
   elements.resultMode.textContent = "ประมาณการนอก One Price จากโครงสร้างอัตราเดิม";
   elements.freightLabel.textContent = "ค่าระวางโดยประมาณ";
   elements.freightTotal.textContent = formatBaht(estimate.freight);
@@ -266,6 +341,14 @@ function calculateQuote(event) {
   const weight = numberValue(elements.weight);
   const dimensions = [numberValue(elements.length), numberValue(elements.width), numberValue(elements.height)];
   const eligibility = getEligibility(weight, dimensions);
+  const journey = getRouteJourney(selection.origin, selection.destination);
+  if (!journey) {
+    elements.form.hidden = true;
+    elements.manualReason.textContent = "ยังไม่พบแนวเชื่อมต่อของสถานีคู่นี้ในแบบจำลองโครงข่าย";
+    elements.quoteResult.hidden = true;
+    elements.manualQuote.hidden = false;
+    return;
+  }
   const baseCosts = calculateCosts({
     route: { price: 0 },
     pieces,
@@ -288,8 +371,8 @@ function calculateQuote(event) {
       originAccess: numberValue(elements.originAccess),
       destinationAccess: numberValue(elements.destinationAccess),
     });
-    renderOnePrice(selection, costs);
-  } else if (!renderLegacyEstimate(selection, baseCosts, weight, dimensions)) {
+    renderOnePrice(selection, costs, journey);
+  } else if (!renderLegacyEstimate(selection, baseCosts, weight, dimensions, journey)) {
     return;
   }
 

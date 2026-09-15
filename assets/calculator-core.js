@@ -18,6 +18,8 @@
     south: "สายใต้",
     maeklong: "สายแม่กลอง",
   };
+  const ROUTE_HUB_NAME = "ชุมทางบางซื่อ";
+  const ROUTE_HUB_ID = stations.find((station) => station.name === ROUTE_HUB_NAME)?.id || "srt0006";
 
   function getStation(id) {
     return stations.find((station) => station.id === id);
@@ -53,7 +55,7 @@
       label: "ส่งข้ามสาย",
       price: 100,
       hours: 48,
-      description: `${getStationLineLabel(origin)} → ${getStationLineLabel(destination)} · เชื่อมต่อผ่านจุดเปลี่ยนสาย`,
+      description: `${getStationLineLabel(origin)} → ${getStationLineLabel(destination)} · เชื่อมผ่าน${ROUTE_HUB_NAME}`,
     };
   }
 
@@ -93,32 +95,262 @@
     return Math.max(10, Math.ceil(value / 10) * 10);
   }
 
-  function estimateRailDistance(origin, destination) {
-    const directDistance = haversineDistanceKm(origin, destination);
-    if (directDistance === null) return null;
+  function indexRange(start, end) {
+    return Array.from({ length: end - start + 1 }, (_, offset) => start + offset);
+  }
 
-    let distance = directDistance * 1.22;
-    let routing = "แนวเส้นทางเดียวกัน";
-    if (!sharesLine(origin, destination)) {
-      const central = stations.find((station) => station.name === "กลางกรุงเทพอภิวัฒน์");
-      const toCentral = central ? haversineDistanceKm(origin, central) : null;
-      const fromCentral = central ? haversineDistanceKm(central, destination) : null;
-      if (toCentral !== null && fromCentral !== null) {
-        distance = (toCentral + fromCentral) * 1.18;
-        routing = "เชื่อมผ่านกรุงเทพอภิวัฒน์";
-      } else {
-        distance = directDistance * 1.38;
-        routing = "เผื่อการเชื่อมข้ามสาย";
+  function validThaiCoordinate(station) {
+    return Number.isFinite(station?.lat) && Number.isFinite(station?.lon)
+      && station.lat >= 5 && station.lat <= 21
+      && station.lon >= 97 && station.lon <= 106;
+  }
+
+  function estimateSegmentDistance(origin, destination) {
+    if (origin.name === destination.name) {
+      return { kilometers: 0.1, estimated: false };
+    }
+
+    if (
+      validThaiCoordinate(origin)
+      && validThaiCoordinate(destination)
+      && origin.coordinateSource === "official"
+      && destination.coordinateSource === "official"
+    ) {
+      const direct = haversineDistanceKm(origin, destination);
+      if (direct >= 0.15 && direct <= 80) {
+        return {
+          kilometers: Math.max(0.5, Math.round(direct * 1.14 * 10) / 10),
+          estimated: origin.coordinateSource !== "official" || destination.coordinateSource !== "official",
+        };
       }
     }
 
-    const usesProvinceCentroid = [origin, destination].some(
-      (station) => station.coordinateSource !== "official",
-    );
     return {
-      kilometers: roundUpToTen(distance),
-      basis: usesProvinceCentroid ? `${routing} และพิกัดกลางจังหวัด` : `${routing} และพิกัดสถานี`,
-      confidence: usesProvinceCentroid ? "low" : "medium",
+      kilometers: origin.province === destination.province ? 4 : 8,
+      estimated: true,
+    };
+  }
+
+  function addGraphEdge(graph, origin, destination, options = {}) {
+    if (!origin || !destination || origin.id === destination.id) return;
+    const distance = options.kilometers
+      ? { kilometers: options.kilometers, estimated: true }
+      : estimateSegmentDistance(origin, destination);
+    const edge = {
+      to: destination.id,
+      kilometers: distance.kilometers,
+      estimated: distance.estimated,
+      transfer: Boolean(options.transfer),
+      transferLabel: options.transferLabel || "",
+    };
+    const reverse = { ...edge, to: origin.id };
+    const append = (fromId, nextEdge) => {
+      if (!graph.has(fromId)) graph.set(fromId, []);
+      const edges = graph.get(fromId);
+      const existing = edges.find((candidate) => candidate.to === nextEdge.to);
+      if (!existing || existing.kilometers > nextEdge.kilometers) {
+        if (existing) edges.splice(edges.indexOf(existing), 1);
+        edges.push(nextEdge);
+      }
+    };
+    append(origin.id, edge);
+    append(destination.id, reverse);
+  }
+
+  function buildRailGraph() {
+    const graph = new Map(stations.map((station) => [station.id, []]));
+    const segmentIndexes = [
+      indexRange(0, 28),
+      [28, ...indexRange(29, 128)],
+      [89, ...indexRange(129, 130)],
+      [28, ...indexRange(131, 200)],
+      [28, ...indexRange(131, 161), ...indexRange(201, 249)],
+      [137, ...indexRange(250, 287), 216],
+      [5, 4, 3, 2, 1, 288, ...indexRange(289, 308)],
+      [308, ...indexRange(309, 341)],
+      [311, ...indexRange(342, 345), 136, 137],
+      [308, ...indexRange(346, 366)],
+      [5, ...indexRange(367, 574)],
+      [540, ...indexRange(575, 577)],
+      [387, ...indexRange(578, 591)],
+      [387, ...indexRange(592, 618)],
+      [480, ...indexRange(619, 626)],
+      [505, ...indexRange(627, 639)],
+      [509, ...indexRange(640, 647)],
+      indexRange(648, 667),
+      indexRange(668, 683),
+    ];
+
+    segmentIndexes.forEach((indexes) => {
+      indexes.forEach((stationIndex, position) => {
+        if (!position) return;
+        addGraphEdge(graph, stations[indexes[position - 1]], stations[stationIndex]);
+      });
+    });
+
+    addGraphEdge(graph, stations[5], stations[648], {
+      kilometers: 12,
+      transfer: true,
+      transferLabel: "ช่วงเชื่อมต่อจากชุมทางบางซื่อไปวงเวียนใหญ่",
+    });
+    addGraphEdge(graph, stations[667], stations[668], {
+      kilometers: 2,
+      transfer: true,
+      transferLabel: "ช่วงเปลี่ยนถ่ายมหาชัย–บ้านแหลม",
+    });
+    return graph;
+  }
+
+  let railGraph;
+
+  function shortestRailPath(originId, destinationId) {
+    const graph = railGraph || (railGraph = buildRailGraph());
+    const distances = new Map([[originId, 0]]);
+    const previous = new Map();
+    const remaining = new Set(graph.keys());
+
+    while (remaining.size) {
+      let current = null;
+      let currentDistance = Infinity;
+      remaining.forEach((id) => {
+        const distance = distances.get(id) ?? Infinity;
+        if (distance < currentDistance) {
+          current = id;
+          currentDistance = distance;
+        }
+      });
+      if (!current || currentDistance === Infinity) break;
+      remaining.delete(current);
+      if (current === destinationId) break;
+
+      (graph.get(current) || []).forEach((edge) => {
+        if (!remaining.has(edge.to)) return;
+        const candidate = currentDistance + edge.kilometers;
+        if (candidate < (distances.get(edge.to) ?? Infinity)) {
+          distances.set(edge.to, candidate);
+          previous.set(edge.to, { from: current, edge });
+        }
+      });
+    }
+
+    if (!distances.has(destinationId)) return null;
+    const nodeIds = [destinationId];
+    const edges = [];
+    let cursor = destinationId;
+    while (cursor !== originId) {
+      const step = previous.get(cursor);
+      if (!step) return null;
+      edges.unshift(step.edge);
+      cursor = step.from;
+      nodeIds.unshift(cursor);
+    }
+    return { nodeIds, edges };
+  }
+
+  function joinPaths(first, second) {
+    if (!first) return second;
+    if (!second) return first;
+    return {
+      nodeIds: [...first.nodeIds, ...second.nodeIds.slice(1)],
+      edges: [...first.edges, ...second.edges],
+    };
+  }
+
+  function scalePathDistance(path, origin, destination) {
+    if (!path) return null;
+    const rawTotal = path.edges.reduce((sum, edge) => sum + edge.kilometers, 0);
+    if (!rawTotal || !validThaiCoordinate(origin) || !validThaiCoordinate(destination)) return path;
+    const directDistance = haversineDistanceKm(origin, destination);
+    if (!directDistance || directDistance < 0.2) return path;
+    const targetDistance = Math.max(1, directDistance * 1.28);
+    const scale = targetDistance / rawTotal;
+    return {
+      nodeIds: [...path.nodeIds],
+      edges: path.edges.map((edge) => ({
+        ...edge,
+        kilometers: edge.kilometers * scale,
+        estimated: true,
+      })),
+    };
+  }
+
+  function getRouteJourney(origin, destination) {
+    if (!origin || !destination || origin.id === destination.id) return null;
+    const mustUseHub = !sharesLine(origin, destination);
+    const hub = getStation(ROUTE_HUB_ID);
+    const rawPath = mustUseHub && origin.id !== ROUTE_HUB_ID && destination.id !== ROUTE_HUB_ID
+      ? joinPaths(
+        scalePathDistance(shortestRailPath(origin.id, ROUTE_HUB_ID), origin, hub),
+        scalePathDistance(shortestRailPath(ROUTE_HUB_ID, destination.id), hub, destination),
+      )
+      : scalePathDistance(shortestRailPath(origin.id, destination.id), origin, destination);
+    if (!rawPath) return null;
+
+    const displayStops = [];
+    let pendingDistance = 0;
+    let pendingEstimated = false;
+    let pendingTransfer = false;
+    let pendingTransferLabel = "";
+    rawPath.nodeIds.forEach((nodeId, index) => {
+      const station = getStation(nodeId);
+      if (!station) return;
+      if (index) {
+        const edge = rawPath.edges[index - 1];
+        pendingDistance += edge.kilometers;
+        pendingEstimated ||= edge.estimated;
+        pendingTransfer ||= edge.transfer;
+        if (edge.transferLabel) pendingTransferLabel = edge.transferLabel;
+      }
+      const previousStop = displayStops[displayStops.length - 1];
+      if (previousStop?.station.name === station.name) {
+        previousStop.station = station;
+        return;
+      }
+      displayStops.push({
+        station,
+        distanceFromPrevious: pendingDistance,
+        estimated: pendingEstimated,
+        transfer: pendingTransfer,
+        transferLabel: pendingTransferLabel,
+      });
+      pendingDistance = 0;
+      pendingEstimated = false;
+      pendingTransfer = false;
+      pendingTransferLabel = "";
+    });
+
+    let cumulative = 0;
+    displayStops.forEach((stop) => {
+      cumulative += stop.distanceFromPrevious;
+      stop.cumulativeKilometers = cumulative;
+    });
+    const transferCount = rawPath.edges.filter((edge) => edge.transfer).length;
+    const estimatedSegmentCount = rawPath.edges.filter((edge) => edge.estimated).length;
+    return {
+      hubId: ROUTE_HUB_ID,
+      hubName: ROUTE_HUB_NAME,
+      viaHub: rawPath.nodeIds.includes(ROUTE_HUB_ID),
+      forcedHub: mustUseHub,
+      stops: displayStops,
+      kilometers: Math.max(1, Math.round(cumulative)),
+      rawKilometers: cumulative,
+      transferCount,
+      estimatedSegmentCount,
+      basis: mustUseHub
+        ? `ลำดับโครงข่ายผ่าน${ROUTE_HUB_NAME}`
+        : "ลำดับโครงข่ายภายในสายและทางแยกที่เกี่ยวข้อง",
+      confidence: estimatedSegmentCount || transferCount ? "low" : "medium",
+    };
+  }
+
+  function estimateRailDistance(origin, destination) {
+    const journey = getRouteJourney(origin, destination);
+    if (!journey) return null;
+    return {
+      kilometers: journey.kilometers,
+      basis: journey.basis,
+      confidence: journey.confidence,
+      stationCount: journey.stops.length,
     };
   }
 
@@ -164,6 +396,8 @@
     calculateCosts,
     haversineDistanceKm,
     estimateRailDistance,
+    getRouteJourney,
+    routeHubName: ROUTE_HUB_NAME,
     getOrdinaryRatePerKg,
     calculateLegacyFreightEstimate,
   };

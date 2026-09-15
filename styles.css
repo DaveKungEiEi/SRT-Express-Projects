@@ -22,6 +22,10 @@
   box-sizing: border-box;
 }
 
+[hidden] {
+  display: none !important;
+}
+
 html {
   scroll-behavior: smooth;
   scroll-padding-top: 110px;
@@ -1009,6 +1013,7 @@ h3 {
 .line-northeast { background: #73bf87; }
 .line-east { background: #e77263; }
 .line-south { background: #6eb3d0; }
+.line-maeklong { background: #c99ad6; }
 
 .button-light {
   color: var(--srt-deep);
@@ -1337,6 +1342,12 @@ input.is-invalid {
   font-size: 11px;
 }
 
+.station-source {
+  margin: 9px 2px 0;
+  color: #7c817e;
+  font-size: 10px;
+}
+
 .parcel-grid {
   grid-template-columns: 0.7fr 0.9fr 2fr;
 }
@@ -1374,6 +1385,17 @@ input.is-invalid {
 }
 
 .dimension-inputs input { padding-right: 38px; }
+
+.distance-field {
+  grid-column: 1 / -1;
+}
+
+.distance-field small {
+  display: block;
+  margin-top: 6px;
+  color: #7c817e;
+  font-size: 10px;
+}
 
 .limit-meter {
   display: grid;
@@ -1562,7 +1584,26 @@ input.is-invalid {
 }
 
 .price-breakdown dt { color: #737975; }
-.price-breakdown dd { margin: 0; font-weight: 700; }
+.price-breakdown dd {
+  max-width: 66%;
+  margin: 0;
+  font-weight: 700;
+  text-align: right;
+}
+
+.price-breakdown .price-breakdown-total {
+  margin-top: 5px;
+  padding-inline: 10px;
+  border: 0;
+  border-radius: 10px;
+  background: #f8f2e7;
+}
+
+.price-breakdown-total dt,
+.price-breakdown-total dd {
+  color: var(--srt);
+  font-weight: 800;
+}
 
 .delivery-estimate {
   display: flex;
@@ -1933,6 +1974,13 @@ input.is-invalid {
 }
 
 .accordion details p { margin: 0; }
+
+.accordion details a {
+  color: var(--srt);
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
 
 .cta-section {
   padding: 0 0 100px;

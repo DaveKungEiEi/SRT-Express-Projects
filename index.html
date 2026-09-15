@@ -17,6 +17,7 @@
       rel="stylesheet"
     />
     <link rel="stylesheet" href="styles.css" />
+    <script src="assets/stations.js" defer></script>
     <script src="assets/calculator-core.js" defer></script>
     <script src="script.js" defer></script>
   </head>
@@ -69,7 +70,7 @@
             <h1>ส่งสินค้าไปกับรถไฟ<br /><em>ข้ามสาย ก็ไปถึง</em></h1>
             <p class="hero-lead">
               แนวคิดบริการขนส่งพัสดุจากสถานีถึงสถานี เชื่อมต่อสายเหนือ อีสาน ตะวันออก และใต้
-              พร้อมประเมินค่าระวางได้ก่อนส่ง
+              เลือกได้จากทะเบียนสถานี รฟท. 684 รายการ พร้อมประเมินค่าระวางได้ก่อนส่ง
             </p>
             <div class="hero-actions">
               <a class="button button-primary" href="#calculator">
@@ -80,7 +81,7 @@
             </div>
             <div class="trust-row" aria-label="จุดเด่นบริการต้นแบบ">
               <div><strong>1–2 วัน*</strong><span>กรอบเวลาที่เสนอ</span></div>
-              <div><strong>4 สายหลัก</strong><span>เชื่อมผ่านสถานีกลาง</span></div>
+              <div><strong>684 รายการ</strong><span>ทะเบียนสถานี รฟท.</span></div>
               <div><strong>ติดตามรายชิ้น</strong><span>ทุกจุดเปลี่ยนมือ</span></div>
             </div>
             <p class="micro-note">*เป้าหมายของแบบจำลอง ขึ้นอยู่กับขบวน จุดเปลี่ยนถ่าย และสถานีที่ให้บริการจริง</p>
@@ -164,7 +165,7 @@
                 <svg viewBox="0 0 32 32"><path d="M4 22h24M7 22V11h18v11M10 11V7h12v4M10 26h12" /><circle cx="10" cy="22" r="2" /><circle cx="22" cy="22" r="2" /></svg>
               </div>
               <h3>ห่อวัตถุทั่วไป</h3>
-              <p>สำหรับอะไหล่ เครื่องใช้ และสิ่งของที่เกินเกณฑ์ One Price โดยสถานีประเมินตามรายการจริง</p>
+              <p>สำหรับอะไหล่ เครื่องใช้ และสิ่งของที่เกินเกณฑ์ One Price ระบบแสดงค่าประมาณจากโครงสร้างอัตราเดิมให้วางแผนก่อนติดต่อสถานี</p>
               <ul>
                 <li>คิดตามชนิดและน้ำหนัก</li>
                 <li>ตรวจขนาดและระยะทาง</li>
@@ -205,6 +206,7 @@
               <span><i class="line-northeast"></i>สายอีสาน</span>
               <span><i class="line-east"></i>สายตะวันออก</span>
               <span><i class="line-south"></i>สายใต้</span>
+              <span><i class="line-maeklong"></i>สายแม่กลอง</span>
             </div>
             <a class="button button-light" href="#calculator">ลองคำนวณเส้นทาง</a>
           </div>
@@ -237,17 +239,17 @@
           <div class="calculator-intro reveal">
             <p class="eyebrow"><span></span> เครื่องคำนวณ</p>
             <h2>เช็กราคาให้ชัด<br />ก่อนนำพัสดุไปสถานี</h2>
-            <p>ระบบจะตรวจสายรถไฟ น้ำหนัก และขนาด แล้วแสดงค่าระวางกับค่าใช้จ่ายเสริมแยกกัน</p>
+            <p>ระบบจะตรวจสายรถไฟ น้ำหนัก และขนาด แล้วเลือกระหว่าง One Price กับประมาณการค่าระวางนอกเกณฑ์โดยอัตโนมัติ</p>
             <div class="calculator-note">
               <span aria-hidden="true">i</span>
-              <p><strong>อัตราอ้างอิง</strong> ข่าว SRT Express One Price เดือนสิงหาคม 2569 ตามข้อมูลในรายงานที่แนบมา โปรดตรวจสอบกับสถานีก่อนใช้บริการจริง</p>
+              <p><strong>ฐานข้อมูล</strong> รายชื่อ 684 รายการจากทะเบียนสถานี รฟท. และโครงสร้างค่าระวางจากใบแทรก 910 การมีชื่อในทะเบียนไม่ได้ยืนยันว่าสถานีนั้นรับฝากพัสดุ</p>
             </div>
             <div class="rail-stamp" aria-hidden="true"><span>SRT</span><strong>EXPRESS</strong><small>EST. 2569</small></div>
           </div>
 
           <div class="calculator-card reveal">
             <div class="calculator-tabs" role="tablist" aria-label="ประเภทการคำนวณ">
-              <button class="tab is-active" type="button" role="tab" aria-selected="true">พัสดุ One Price</button>
+              <button class="tab is-active" type="button" role="tab" aria-selected="true">คำนวณพัสดุ</button>
               <button class="tab" type="button" role="tab" aria-selected="false" data-disabled-tab>สินค้าเฉพาะประเภท</button>
             </div>
 
@@ -277,6 +279,7 @@
                   <span class="route-badge" id="route-badge"></span>
                   <p id="route-description"></p>
                 </div>
+                <p class="station-source">ครอบคลุม 684 รายการในทะเบียนสถานี รฟท. รวมสถานี ที่หยุดรถ และป้ายหยุดรถ โปรดตรวจสิทธิรับฝากกับสถานีจริง</p>
               </div>
 
               <div class="form-section">
@@ -300,6 +303,11 @@
                       <div class="input-suffix"><input id="height" name="height" type="number" min="1" value="15" aria-label="ความสูง" inputmode="decimal" required /><b>ซม.</b></div>
                     </div>
                   </fieldset>
+                  <label class="distance-field">
+                    <span>ระยะทางทางราง (ถ้าทราบ)</span>
+                    <div class="input-suffix"><input id="rail-distance" name="railDistance" type="number" min="1" step="1" inputmode="decimal" placeholder="ให้ระบบประมาณ" /><b>กม.</b></div>
+                    <small id="distance-hint">เว้นว่างเพื่อให้ระบบประมาณจากพิกัดในทะเบียนสถานี</small>
+                  </label>
                 </div>
                 <div class="limit-meter" id="limit-meter">
                   <div><span>เกณฑ์น้ำหนัก</span><strong id="weight-status">ผ่านเกณฑ์</strong></div>
@@ -345,11 +353,16 @@
                 <button id="edit-quote" type="button">แก้ไขข้อมูล</button>
               </div>
               <div class="result-price">
-                <p>ค่าใช้จ่ายรวมโดยประมาณ</p>
+                <p id="result-mode">ค่าใช้จ่ายรวมโดยประมาณ</p>
                 <div><strong id="grand-total">0</strong><span>บาท</span></div>
               </div>
               <dl class="price-breakdown">
-                <div><dt>ค่าระวาง One Price</dt><dd id="freight-total">0 บาท</dd></div>
+                <div data-legacy-row hidden><dt>ระยะทางที่ใช้คำนวณ</dt><dd id="distance-total">0 กม.</dd></div>
+                <div data-legacy-row hidden><dt>อัตราธรรมดาฐาน</dt><dd id="ordinary-total">0 บาท</dd></div>
+                <div data-legacy-row hidden><dt>อัตราด่วน 2 เท่า</dt><dd id="express-total">0 บาท</dd></div>
+                <div data-legacy-row hidden><dt>ค่าธรรมเนียมเดิม 50%</dt><dd id="fee-total">0 บาท</dd></div>
+                <div data-legacy-row hidden><dt>เกณฑ์ขั้นต่ำ</dt><dd id="minimum-total">ไม่ใช้ขั้นต่ำ</dd></div>
+                <div class="price-breakdown-total"><dt id="freight-label">ค่าระวาง One Price</dt><dd id="freight-total">0 บาท</dd></div>
                 <div><dt>กล่องและวัสดุ</dt><dd id="packing-total">0 บาท</dd></div>
                 <div><dt>ค่าเดินทางต้นทาง–ปลายทาง</dt><dd id="access-total">0 บาท</dd></div>
               </dl>
@@ -365,9 +378,9 @@
 
             <div class="manual-quote" id="manual-quote" hidden aria-live="polite">
               <span class="manual-icon" aria-hidden="true">!</span>
-              <h3>พัสดุนี้อยู่นอกเกณฑ์ One Price</h3>
+              <h3>ยังคำนวณระยะทางไม่ได้</h3>
               <p id="manual-reason"></p>
-              <p>สถานีต้องตรวจประเภทสินค้า น้ำหนัก ขนาด ระยะทาง และขบวนที่รับขน เพื่อคำนวณค่าระวางเฉพาะรายการ</p>
+              <p>กรอกระยะทางทางรางเพื่อให้ระบบสร้างค่าประมาณ หรือให้สถานีต้นทางตรวจระยะทางและประเภทสินค้า</p>
               <button class="button button-dark" id="edit-manual" type="button">กลับไปแก้ไขข้อมูล</button>
             </div>
           </div>
@@ -451,11 +464,19 @@
             </details>
             <details>
               <summary>ถ้าน้ำหนักหรือขนาดเกินเกณฑ์ คิดราคาอย่างไร?<span></span></summary>
-              <div><p>ไม่สามารถใช้ราคา One Price ได้ ต้องให้สถานีประเมินประเภทบริการตามชนิดสินค้า น้ำหนัก ขนาด ระยะทาง และขบวนที่รับขน เว็บไซต์นี้จึงไม่สร้างราคาสมมติให้กับสินค้านอกเกณฑ์</p></div>
+              <div><p>ระบบจะประมาณระยะทางทางรางจากพิกัดสถานีหรือใช้ระยะทางที่ผู้ใช้กรอก ปัดน้ำหนักขึ้นเป็นกิโลกรัมเต็ม แล้วคำนวณฐานอัตราธรรมดา อัตราด่วน 2 เท่า ค่าธรรมเนียมตามโครงสร้างเดิม 50% ของอัตราด่วน และขั้นต่ำ 60 บาทต่อชิ้น ตัวเลขนี้เป็นเพียงงบประมาณ เพราะตารางเต็ม สถานะการใช้ปัจจุบัน ชนิดสินค้า และสถานีที่รับฝากต้องให้ รฟท. ยืนยัน</p></div>
+            </details>
+            <details>
+              <summary>รายชื่อสถานีมาจากไหน และทุกแห่งรับพัสดุหรือไม่?<span></span></summary>
+              <div><p>รายชื่อมาจากชุดข้อมูลทะเบียนสถานีของการรถไฟแห่งประเทศไทย 684 แถว มีชื่อไม่ซ้ำ 683 ชื่อ เพราะ “ยมราช” มีสองรายการคนละพื้นที่ ทะเบียนนี้รวมสถานี ที่หยุดรถ และป้ายหยุดรถ จึงไม่ได้หมายความว่าทุกแห่งมีบริการรับฝากสินค้า</p></div>
             </details>
             <details>
               <summary>เว็บไซต์นี้ใช้จองหรือชำระเงินจริงได้หรือไม่?<span></span></summary>
               <div><p>ยังไม่ได้ เว็บไซต์นี้เป็นต้นแบบเพื่อการศึกษาและการวางแผน ค่าบริการ เส้นทาง และเวลาที่แสดงต้องได้รับการยืนยันจากสถานีหรือการรถไฟแห่งประเทศไทยก่อนใช้บริการจริง</p></div>
+            </details>
+            <details>
+              <summary>ตรวจสอบแหล่งข้อมูลได้ที่ไหน?<span></span></summary>
+              <div><p>ตรวจรายชื่อได้จาก <a href="https://gdc.railway.co.th/dataset/after16" target="_blank" rel="noreferrer">ชุดข้อมูลสถานีของ รฟท.</a> และตรวจเอกสารค่าระวางได้จาก <a href="https://srtcontainer.railway.co.th/downloads.php" target="_blank" rel="noreferrer">หน้าเอกสาร/แบบฟอร์ม รฟท.</a> โดยเลือกใบแทรก 910</p></div>
             </details>
           </div>
         </div>
@@ -482,7 +503,7 @@
             </span>
             <span><strong>SRT EXPRESS</strong><small>PROJECT</small></span>
           </a>
-          <p>ต้นแบบระบบประเมินค่าขนส่งสินค้าทางรถไฟ เพื่อศึกษาความเป็นไปได้ของบริการส่งข้ามสายภายใน 1–2 วัน</p>
+          <p>ต้นแบบระบบประเมินค่าขนส่งสินค้าทางรถไฟ ครอบคลุมทะเบียนสถานี รฟท. 684 รายการ และการส่งข้ามสาย</p>
         </div>
         <div class="footer-links">
           <strong>สำรวจเว็บไซต์</strong>
@@ -499,7 +520,7 @@
         </div>
         <div class="footer-notice">
           <strong>หมายเหตุ</strong>
-          <p>ไม่มีความเกี่ยวข้องอย่างเป็นทางการกับการรถไฟแห่งประเทศไทย ข้อมูลอ้างอิงจากรายงานโครงการและควรตรวจสอบอีกครั้งก่อนใช้งานจริง</p>
+          <p>ไม่มีความเกี่ยวข้องอย่างเป็นทางการกับการรถไฟแห่งประเทศไทย รายชื่อและสูตรเป็นข้อมูลอ้างอิงเพื่อวางแผน ต้องให้สถานียืนยันก่อนใช้งานจริง</p>
         </div>
       </div>
       <div class="footer-bottom page-width">

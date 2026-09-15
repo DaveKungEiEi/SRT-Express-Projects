@@ -361,11 +361,37 @@ elements.mainNav.querySelectorAll("a").forEach((link) => {
   });
 });
 
-window.addEventListener(
-  "scroll",
-  () => elements.header.classList.toggle("is-scrolled", window.scrollY > 24),
-  { passive: true },
-);
+const readingProgress = document.querySelector(".reading-progress");
+const navLinks = Array.from(document.querySelectorAll('.main-nav a[href^="#"]'));
+const navSections = navLinks
+  .map((link) => ({ link, section: document.querySelector(link.getAttribute("href")) }))
+  .filter((item) => item.section);
+let scrollFrame = 0;
+
+function updateScrollState() {
+  const scrollable = document.documentElement.scrollHeight - window.innerHeight;
+  const progress = scrollable > 0 ? Math.min(100, Math.max(0, (window.scrollY / scrollable) * 100)) : 0;
+  elements.header.classList.toggle("scrolled", window.scrollY > 56);
+  if (readingProgress) readingProgress.style.width = `${progress}%`;
+
+  const marker = window.scrollY + Math.min(220, window.innerHeight * 0.28);
+  let activeItem = null;
+  navSections.forEach((item) => {
+    if (item.section.offsetTop <= marker) activeItem = item;
+  });
+  navLinks.forEach((link) => link.classList.toggle("active", link === activeItem?.link));
+}
+
+function scheduleScrollState() {
+  if (scrollFrame) return;
+  scrollFrame = window.requestAnimationFrame(() => {
+    scrollFrame = 0;
+    updateScrollState();
+  });
+}
+
+window.addEventListener("scroll", scheduleScrollState, { passive: true });
+window.addEventListener("resize", scheduleScrollState);
 
 const revealObserver = new IntersectionObserver(
   (entries) => {
@@ -382,3 +408,4 @@ const revealObserver = new IntersectionObserver(
 document.querySelectorAll(".reveal").forEach((element) => revealObserver.observe(element));
 updateLimits();
 updateDistanceHint();
+updateScrollState();

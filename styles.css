@@ -21,6 +21,10 @@
   --surface: rgba(255, 255, 255, 0.82);
   --surface-strong: #ffffff;
   --glass: rgba(255, 255, 255, 0.62);
+  --glass-border: rgba(255, 255, 255, 0.72);
+  --glass-highlight: rgba(255, 255, 255, 0.54);
+  --glass-shadow: 0 24px 70px rgba(62, 34, 34, 0.12);
+  --motion-spring: cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
 *,
@@ -2409,8 +2413,8 @@ input.is-invalid {
 
 .accordion summary::-webkit-details-marker { display: none; }
 
-.accordion summary span,
-.accordion summary span::after {
+.accordion summary > span:not(.interaction-ripple),
+.accordion summary > span:not(.interaction-ripple)::after {
   position: absolute;
   top: 50%;
   right: 4px;
@@ -2421,14 +2425,14 @@ input.is-invalid {
   background: var(--srt);
 }
 
-.accordion summary span::after {
+.accordion summary > span:not(.interaction-ripple)::after {
   top: 0;
   right: 0;
   transform: rotate(90deg);
   transition: transform .2s ease;
 }
 
-.accordion details[open] summary span::after { transform: rotate(0); }
+.accordion details[open] summary > span:not(.interaction-ripple)::after { transform: rotate(0); }
 
 .accordion details > div {
   padding: 0 40px 20px 0;
@@ -3058,6 +3062,388 @@ html[data-theme="dark"] .result-price {
   background: #651a26;
 }
 
+/* =========================================================
+   Liquid Glass polish, readable type and tactile motion
+   ========================================================= */
+
+body { font-size: 16px; }
+
+.brand small { font-size: 10px; letter-spacing: 0.24em; }
+.main-nav { font-size: 15px; }
+.button { position: relative; overflow: hidden; isolation: isolate; font-size: 14px; }
+.trust-row span { font-size: 12px; }
+.micro-note { font-size: 11px; line-height: 1.65; }
+.dispatch-card small { font-size: 11px; }
+.dispatch-card strong { font-size: 13px; }
+.service-card p { font-size: 15px; line-height: 1.75; }
+.service-card ul { font-size: 14px; line-height: 1.7; }
+.service-card a { font-size: 14px; }
+.network-legend { font-size: 14px; }
+.calculator-note p { font-size: 13px; line-height: 1.7; }
+.rail-stamp strong { font-size: 11px; }
+.rail-stamp small { font-size: 10px; }
+.tab { font-size: 14px; }
+.form-section-title strong { font-size: 15px; }
+label > span,
+.station-field > label,
+fieldset legend { font-size: 13px; }
+.station-combobox input[type="text"],
+select { font-size: 14px; }
+.station-option-name { font-size: 13px; }
+.station-option-meta b { font-size: 10px; }
+.station-option-meta small { font-size: 10px; }
+.station-help { font-size: 11px; line-height: 1.45; }
+.station-source,
+.distance-field small { font-size: 11px; line-height: 1.6; }
+.route-badge { font-size: 10px; }
+.route-preview p { font-size: 12px; }
+.limit-meter > div:not(.meter) { font-size: 11px; }
+.optional-toggle strong { font-size: 14px; }
+.optional-toggle small { font-size: 11px; }
+.check-row strong { font-size: 13px; }
+.check-row small { font-size: 11px; }
+.result-route { font-size: 11px; }
+.result-topline button { font-size: 12px; }
+.route-metric small { font-size: 11px; }
+.route-metric span { font-size: 12px; }
+.result-price p { font-size: 12px; }
+.price-breakdown > div { font-size: 13px; }
+.delivery-estimate small { font-size: 11px; }
+.delivery-estimate strong { font-size: 14px; }
+.route-endpoint small { font-size: 10px; }
+.route-endpoint strong { font-size: 14px; }
+.route-detail summary span { font-size: 13px; }
+.route-detail summary b { font-size: 11px; }
+.route-stop-name { font-size: 12px; }
+.route-stop.is-origin .route-stop-name,
+.route-stop.is-destination .route-stop-name,
+.route-stop.is-hub .route-stop-name { font-size: 13px; }
+.route-stop-name b { font-size: 10px; }
+.route-stop-content small { font-size: 10px; line-height: 1.6; }
+.route-data-note,
+.result-disclaimer { font-size: 11px; line-height: 1.7; }
+.manual-quote p { font-size: 13px; }
+.scan-label { font-size: 11px; }
+.safety-list li > span { font-size: 13px; }
+.safety-list strong { font-size: 15px; }
+.safety-list p { font-size: 13px; }
+.step-number { font-size: 10px; }
+.process-step h3 { font-size: 17px; }
+.process-step p { font-size: 13px; }
+.accordion summary { font-size: 16px; }
+.accordion details > div { font-size: 14px; line-height: 1.75; }
+.footer-brand p,
+.footer-notice p,
+.footer-links { font-size: 12px; line-height: 1.75; }
+.footer-links strong,
+.footer-notice strong { font-size: 13px; }
+.footer-bottom { font-size: 11px; }
+.footer-theme-label,
+.footer-theme-button { font-size: 11px; }
+
+.quick-facts,
+.service-card:not(.service-card-primary),
+.calculator-card,
+.calculator-note,
+.route-preview,
+.limit-meter,
+.optional-panel,
+.route-metric,
+.delivery-estimate,
+.route-endpoints,
+.route-detail,
+.accordion details,
+.step-icon {
+  border-color: var(--glass-border);
+  background-image:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.7), rgba(255, 250, 241, 0.42)),
+    radial-gradient(circle at 10% 0%, rgba(255, 255, 255, 0.72), transparent 42%);
+  box-shadow:
+    var(--glass-shadow),
+    inset 0 1px 0 var(--glass-highlight),
+    inset 0 -1px 0 rgba(116, 31, 43, 0.04);
+  -webkit-backdrop-filter: blur(24px) saturate(145%);
+  backdrop-filter: blur(24px) saturate(145%);
+}
+
+.calculator-card {
+  border-color: rgba(255, 255, 255, 0.86);
+  background-color: rgba(255, 253, 249, 0.68);
+  box-shadow:
+    0 30px 90px rgba(62, 34, 34, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.98),
+    inset 0 0 0 1px rgba(116, 31, 43, 0.035);
+}
+
+.calculator-tabs {
+  background: rgba(247, 240, 228, 0.52);
+  -webkit-backdrop-filter: blur(18px) saturate(140%);
+  backdrop-filter: blur(18px) saturate(140%);
+}
+
+.tab.is-active {
+  border: 1px solid rgba(255, 255, 255, 0.88);
+  background: rgba(255, 255, 255, 0.72);
+  box-shadow:
+    0 8px 24px rgba(65, 38, 34, 0.09),
+    inset 0 1px 0 rgba(255, 255, 255, 0.95);
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
+}
+
+input[type="text"],
+input[type="number"],
+select {
+  border-color: rgba(116, 31, 43, 0.14);
+  background-color: rgba(255, 255, 255, 0.7);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.86);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+}
+
+input[type="text"]:focus,
+input[type="number"]:focus,
+select:focus {
+  border-color: rgba(116, 31, 43, 0.62);
+  box-shadow:
+    0 0 0 4px rgba(116, 31, 43, 0.1),
+    0 10px 28px rgba(116, 31, 43, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.92);
+}
+
+.button-ghost,
+.button-outline {
+  border-color: rgba(255, 255, 255, 0.84);
+  background: rgba(255, 255, 255, 0.48);
+  box-shadow:
+    0 12px 30px rgba(60, 35, 33, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.94);
+  -webkit-backdrop-filter: blur(18px) saturate(140%);
+  backdrop-filter: blur(18px) saturate(140%);
+}
+
+.route-endpoints,
+.route-detail,
+.route-metric {
+  background-color: rgba(255, 253, 249, 0.64);
+}
+
+.result-price {
+  position: relative;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 15% 0%, rgba(255, 255, 255, 0.18), transparent 42%),
+    linear-gradient(135deg, #7f2634, #5d1621);
+  box-shadow:
+    0 20px 45px rgba(116, 31, 43, 0.25),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.result-price::after {
+  position: absolute;
+  top: -80%;
+  left: -45%;
+  width: 36%;
+  height: 260%;
+  content: "";
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.24), transparent);
+  pointer-events: none;
+  transform: rotate(18deg);
+  animation: price-glass-sheen 5.8s ease-in-out infinite;
+}
+
+.site-header.scrolled .nav-shell {
+  border-color: rgba(255, 255, 255, 0.9);
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.72), rgba(255, 249, 239, 0.48));
+  box-shadow:
+    0 18px 55px rgba(70, 31, 35, 0.17),
+    inset 0 1px 0 rgba(255, 255, 255, 1),
+    inset 0 -1px 0 rgba(116, 31, 43, 0.05);
+  -webkit-backdrop-filter: blur(30px) saturate(175%);
+  backdrop-filter: blur(30px) saturate(175%);
+}
+
+.liquid-interactive {
+  --glass-x: 50%;
+  --glass-y: 50%;
+  position: relative;
+  isolation: isolate;
+}
+
+.glass-spotlight {
+  position: absolute;
+  z-index: 5;
+  inset: 0;
+  border-radius: inherit;
+  opacity: 0;
+  background:
+    radial-gradient(circle 210px at var(--glass-x) var(--glass-y), rgba(255, 255, 255, 0.44), transparent 68%);
+  mix-blend-mode: soft-light;
+  pointer-events: none;
+  transition: opacity 0.34s ease;
+}
+
+.cta-card > .glass-spotlight {
+  position: absolute;
+  z-index: 5;
+}
+
+.liquid-interactive.is-glass-active > .glass-spotlight { opacity: 0.85; }
+
+.interaction-ripple {
+  position: absolute;
+  z-index: 10;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.45);
+  pointer-events: none;
+  transform: translate(-50%, -50%) scale(0);
+  animation: liquid-ripple 0.62s ease-out forwards;
+}
+
+.nav-cta,
+.tab,
+.swap-button,
+.optional-toggle,
+.footer-theme-button,
+.station-option,
+.route-detail > summary,
+.accordion summary {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.station-options {
+  transform-origin: top center;
+  animation: glass-menu-in 0.22s var(--motion-spring) both;
+}
+
+.station-option {
+  transition: color 0.18s ease, background 0.18s ease, transform 0.18s ease;
+}
+
+.station-option:hover,
+.station-option.is-active { transform: translateX(3px); }
+
+.service-card .service-icon,
+.step-icon,
+.route-chip,
+.swap-button {
+  transition:
+    transform 0.34s var(--motion-spring),
+    box-shadow 0.3s ease,
+    background 0.3s ease;
+}
+
+.service-card:hover .service-icon { transform: translateY(-4px) rotate(-3deg) scale(1.06); }
+.process-step:hover .step-icon { transform: translateY(-7px) scale(1.045); box-shadow: 0 18px 40px rgba(116, 31, 43, 0.14); }
+.route-chip:hover { transform: translateY(-3px) scale(1.03); }
+.swap-button:hover { transform: translateX(-50%) rotate(180deg) scale(1.07); }
+.button:hover svg,
+.service-card a:hover span { transform: translateX(4px); }
+.button svg,
+.service-card a span { transition: transform 0.24s var(--motion-spring); }
+
+.route-endpoint-marker { animation: endpoint-pulse 2.8s ease-in-out infinite; }
+.route-endpoint-destination .route-endpoint-marker { animation-delay: 1.4s; }
+.route-endpoint-rail span { background-size: 18px 2px; animation: route-dashes 1.8s linear infinite; }
+
+.route-detail[open] .route-timeline,
+.route-detail[open] .route-data-note { animation: glass-content-in 0.34s var(--motion-spring) both; }
+
+.route-detail[open] .route-stop {
+  animation: route-stop-in 0.34s var(--motion-spring) both;
+  animation-delay: calc(var(--stop-index, 0) * 18ms);
+}
+
+#quote-result:not([hidden]),
+.manual-quote:not([hidden]) { animation: result-glass-in 0.48s var(--motion-spring) both; }
+
+@keyframes liquid-ripple {
+  0% { opacity: 0.75; transform: translate(-50%, -50%) scale(0); }
+  100% { opacity: 0; transform: translate(-50%, -50%) scale(24); }
+}
+
+@keyframes glass-menu-in {
+  from { opacity: 0; transform: translateY(-8px) scale(0.985); filter: blur(3px); }
+  to { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
+}
+
+@keyframes glass-content-in {
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes route-stop-in {
+  from { opacity: 0; transform: translateX(-8px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes result-glass-in {
+  from { opacity: 0; transform: translateY(18px) scale(0.985); filter: blur(5px); }
+  to { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
+}
+
+@keyframes endpoint-pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.14); }
+}
+
+@keyframes route-dashes {
+  to { background-position: 18px 0; }
+}
+
+@keyframes price-glass-sheen {
+  0%, 62% { left: -45%; opacity: 0; }
+  72% { opacity: 1; }
+  92%, 100% { left: 120%; opacity: 0; }
+}
+
+html[data-theme="dark"] {
+  --glass-border: rgba(240, 217, 208, 0.15);
+  --glass-highlight: rgba(255, 255, 255, 0.08);
+  --glass-shadow: 0 26px 76px rgba(0, 0, 0, 0.34);
+}
+
+html[data-theme="dark"] .quick-facts,
+html[data-theme="dark"] .service-card:not(.service-card-primary),
+html[data-theme="dark"] .calculator-card,
+html[data-theme="dark"] .calculator-note,
+html[data-theme="dark"] .route-preview,
+html[data-theme="dark"] .limit-meter,
+html[data-theme="dark"] .optional-panel,
+html[data-theme="dark"] .route-metric,
+html[data-theme="dark"] .delivery-estimate,
+html[data-theme="dark"] .route-endpoints,
+html[data-theme="dark"] .route-detail,
+html[data-theme="dark"] .accordion details,
+html[data-theme="dark"] .step-icon {
+  background-image:
+    linear-gradient(145deg, rgba(62, 41, 48, 0.72), rgba(31, 20, 24, 0.58)),
+    radial-gradient(circle at 8% 0%, rgba(255, 255, 255, 0.08), transparent 40%);
+  box-shadow:
+    var(--glass-shadow),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.18);
+}
+
+html[data-theme="dark"] .calculator-card { background-color: rgba(29, 18, 22, 0.74); }
+html[data-theme="dark"] .calculator-tabs { background: rgba(20, 13, 16, 0.58); }
+html[data-theme="dark"] .tab.is-active { border-color: rgba(240, 217, 208, 0.12); background: rgba(70, 44, 52, 0.66); }
+html[data-theme="dark"] input[type="text"],
+html[data-theme="dark"] input[type="number"],
+html[data-theme="dark"] select { background-color: rgba(49, 31, 37, 0.72); }
+html[data-theme="dark"] .site-header.scrolled .nav-shell {
+  border-color: rgba(240, 217, 208, 0.15);
+  background: linear-gradient(135deg, rgba(48, 31, 37, 0.8), rgba(24, 15, 19, 0.68));
+  box-shadow: 0 22px 60px rgba(0, 0, 0, 0.42), inset 0 1px 0 rgba(255, 255, 255, 0.09);
+}
+html[data-theme="dark"] .glass-spotlight { mix-blend-mode: screen; opacity: 0; }
+html[data-theme="dark"] .liquid-interactive.is-glass-active > .glass-spotlight { opacity: 0.24; }
+
 @media (max-width: 800px) {
   .site-header,
   .site-header.scrolled {
@@ -3122,13 +3508,20 @@ html[data-theme="dark"] .result-price {
 
 .reveal {
   opacity: 0;
-  transform: translateY(20px);
-  transition: opacity .65s ease, transform .65s ease;
+  filter: blur(4px);
+  transform: translateY(28px) scale(0.988);
+  transition:
+    opacity 0.72s var(--motion-spring),
+    transform 0.72s var(--motion-spring),
+    filter 0.72s var(--motion-spring);
+  transition-delay: var(--reveal-delay, 0ms);
 }
 
 .reveal.is-visible {
   opacity: 1;
-  transform: translateY(0);
+  filter: blur(0);
+  transform: translateY(0) scale(1);
+  transition-delay: 0ms;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -3138,7 +3531,7 @@ html[data-theme="dark"] .result-price {
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
-  .reveal { opacity: 1; transform: none; }
+  .reveal { opacity: 1; filter: none; transform: none; }
 }
 
 @media (max-width: 1020px) {
@@ -3210,10 +3603,10 @@ html[data-theme="dark"] .result-price {
 
 @media (max-width: 560px) {
   :root { --page: calc(100% - 28px); --radius-lg: 22px; }
-  .prototype-bar { min-height: 39px; padding-inline: 12px; font-size: 10px; }
+  .prototype-bar { min-height: 39px; padding-inline: 12px; font-size: 11px; }
   .brand-mark { width: 38px; height: 38px; }
   .brand strong { font-size: 15px; }
-  .brand small { font-size: 8px; }
+  .brand small { font-size: 10px; letter-spacing: 0.18em; }
   .hero-grid { padding: 105px 0 65px; }
   .hero h1 { font-size: 42px; }
   .hero-lead { font-size: 15px; }
@@ -3239,12 +3632,13 @@ html[data-theme="dark"] .result-price {
   .two-columns, .parcel-grid { grid-template-columns: 1fr; }
   .dimension-fieldset { grid-column: auto; }
   .swap-button { top: 104px; left: auto; right: 9px; transform: rotate(90deg); }
+  .swap-button:hover { transform: rotate(270deg) scale(1.07); }
   .optional-panel .two-columns { gap: 10px; }
   .result-price strong { font-size: 45px; }
   .route-metric { padding: 13px; }
   .route-metric strong { font-size: 21px; }
   .route-endpoints { grid-template-columns: minmax(0, 1fr) 56px minmax(0, 1fr); gap: 8px; padding: 14px 12px; }
-  .route-endpoint strong { font-size: 11px; }
+  .route-endpoint strong { font-size: 13px; }
   .route-detail summary { grid-template-columns: 1fr auto; }
   .route-detail summary b { grid-column: 1 / -1; grid-row: 2; text-align: left; }
   .route-detail summary svg { grid-column: 2; grid-row: 1; }

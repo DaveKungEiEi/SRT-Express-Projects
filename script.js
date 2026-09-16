@@ -395,12 +395,13 @@ function renderJourney(journey, distanceOverride = 0) {
   elements.routeToggleLabel.textContent = "ดูสถานีระหว่างทาง";
   elements.routeTimeline.replaceChildren();
 
-  intermediateStops.forEach((stop) => {
+  intermediateStops.forEach((stop, index) => {
     const distanceFromPrevious = stop.distanceFromPrevious * scale;
     const cumulativeDistance = stop.cumulativeKilometers * scale;
     const isHub = stop.station.id === journey.hubId;
     const item = document.createElement("li");
     item.className = "route-stop";
+    item.style.setProperty("--stop-index", String(Math.min(index, 12)));
     if (isHub) item.classList.add("is-hub");
     if (stop.transfer) item.classList.add("is-transfer");
 
@@ -635,6 +636,75 @@ function scheduleScrollState() {
 window.addEventListener("scroll", scheduleScrollState, { passive: true });
 window.addEventListener("resize", scheduleScrollState);
 
+const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+const finePointer = window.matchMedia("(hover: hover) and (pointer: fine)");
+
+function setupGlassInteractions() {
+  const targets = document.querySelectorAll([
+    ".quick-facts",
+    ".service-card",
+    ".rail-map",
+    ".calculator-card",
+    ".calculator-note",
+    ".safety-visual",
+    ".route-endpoints",
+    ".route-detail",
+    ".accordion",
+    ".cta-card",
+  ].join(","));
+
+  targets.forEach((target) => {
+    target.classList.add("liquid-interactive");
+    if (!target.querySelector(":scope > .glass-spotlight")) {
+      const spotlight = document.createElement("span");
+      spotlight.className = "glass-spotlight";
+      spotlight.setAttribute("aria-hidden", "true");
+      target.append(spotlight);
+    }
+    target.addEventListener("pointermove", (event) => {
+      if (reduceMotion.matches || !finePointer.matches) return;
+      const bounds = target.getBoundingClientRect();
+      target.style.setProperty("--glass-x", `${event.clientX - bounds.left}px`);
+      target.style.setProperty("--glass-y", `${event.clientY - bounds.top}px`);
+      target.classList.add("is-glass-active");
+    });
+    target.addEventListener("pointerleave", () => {
+      target.classList.remove("is-glass-active");
+    });
+  });
+
+  document.querySelectorAll(".service-grid .reveal").forEach((element, index) => {
+    element.style.setProperty("--reveal-delay", `${index * 85}ms`);
+  });
+  document.querySelectorAll(".process-line .reveal").forEach((element, index) => {
+    element.style.setProperty("--reveal-delay", `${index * 75}ms`);
+  });
+}
+
+document.addEventListener("pointerdown", (event) => {
+  if (reduceMotion.matches || event.button > 0) return;
+  const target = event.target.closest([
+    ".button",
+    ".nav-cta",
+    ".tab",
+    ".swap-button",
+    ".optional-toggle",
+    ".footer-theme-button",
+    ".station-option",
+    ".route-detail > summary",
+    ".accordion summary",
+  ].join(","));
+  if (!target) return;
+  const bounds = target.getBoundingClientRect();
+  const ripple = document.createElement("span");
+  ripple.className = "interaction-ripple";
+  ripple.setAttribute("aria-hidden", "true");
+  ripple.style.left = `${event.clientX - bounds.left}px`;
+  ripple.style.top = `${event.clientY - bounds.top}px`;
+  target.append(ripple);
+  window.setTimeout(() => ripple.remove(), 700);
+});
+
 const revealObserver = new IntersectionObserver(
   (entries) => {
     entries.forEach((entry) => {
@@ -648,6 +718,7 @@ const revealObserver = new IntersectionObserver(
 );
 
 document.querySelectorAll(".reveal").forEach((element) => revealObserver.observe(element));
+setupGlassInteractions();
 updateLimits();
 updateDistanceHint();
 updateScrollState();

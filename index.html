@@ -259,29 +259,37 @@
               <div class="form-section">
                 <div class="form-section-title"><span>1</span><strong>เลือกสถานี</strong></div>
                 <div class="form-grid two-columns route-selectors">
-                  <label>
-                    <span>สถานีต้นทาง</span>
-                    <select id="origin" name="origin" required aria-describedby="origin-error">
-                      <option value="">เลือกสถานีต้นทาง</option>
-                    </select>
+                  <div class="station-field">
+                    <label for="origin">สถานีต้นทาง</label>
+                    <div class="station-combobox" data-station-combobox>
+                      <svg class="station-search-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6" /><path d="m16 16 4 4" /></svg>
+                      <input id="origin" name="origin" type="text" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="origin-options" aria-describedby="origin-help origin-error" placeholder="พิมพ์ชื่อหรือรหัสสถานี" autocomplete="off" spellcheck="false" required />
+                      <button class="station-clear" type="button" aria-label="ล้างสถานีต้นทาง" tabindex="-1">×</button>
+                      <div class="station-options" id="origin-options" role="listbox" aria-label="ผลการค้นหาสถานีต้นทาง" hidden></div>
+                    </div>
+                    <small class="station-help" id="origin-help">ค้นหาได้ทั้งชื่อและรหัสย่อสถานี</small>
                     <small class="field-error" id="origin-error"></small>
-                  </label>
+                  </div>
                   <button class="swap-button" id="swap-route" type="button" aria-label="สลับสถานีต้นทางและปลายทาง">
                     <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7h11l-3-3M17 17H6l3 3M18 7l-3 3M6 17l3-3" /></svg>
                   </button>
-                  <label>
-                    <span>สถานีปลายทาง</span>
-                    <select id="destination" name="destination" required aria-describedby="destination-error">
-                      <option value="">เลือกสถานีปลายทาง</option>
-                    </select>
+                  <div class="station-field">
+                    <label for="destination">สถานีปลายทาง</label>
+                    <div class="station-combobox" data-station-combobox>
+                      <svg class="station-search-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6" /><path d="m16 16 4 4" /></svg>
+                      <input id="destination" name="destination" type="text" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="destination-options" aria-describedby="destination-help destination-error" placeholder="พิมพ์ชื่อหรือรหัสสถานี" autocomplete="off" spellcheck="false" required />
+                      <button class="station-clear" type="button" aria-label="ล้างสถานีปลายทาง" tabindex="-1">×</button>
+                      <div class="station-options" id="destination-options" role="listbox" aria-label="ผลการค้นหาสถานีปลายทาง" hidden></div>
+                    </div>
+                    <small class="station-help" id="destination-help">ค้นหาได้ทั้งชื่อและรหัสย่อสถานี</small>
                     <small class="field-error" id="destination-error"></small>
-                  </label>
+                  </div>
                 </div>
                 <div class="route-preview" id="route-preview" hidden>
                   <span class="route-badge" id="route-badge"></span>
                   <p id="route-description"></p>
                 </div>
-                <p class="station-source">ครอบคลุม 684 รายการในทะเบียนสถานี รฟท. รวมสถานี ที่หยุดรถ และป้ายหยุดรถ โปรดตรวจสิทธิรับฝากกับสถานีจริง</p>
+                <p class="station-source">ค้นหาได้ <strong id="selectable-station-count">444</strong> สถานีทั่วประเทศ ไม่รวมที่หยุดรถและป้ายหยุดรถ โปรดตรวจสิทธิรับฝากกับสถานีจริง</p>
               </div>
 
               <div class="form-section">

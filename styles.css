@@ -1249,6 +1249,7 @@ h6 {
 }
 
 label > span,
+.station-field > label,
 fieldset legend {
   display: block;
   margin-bottom: 7px;
@@ -1258,6 +1259,7 @@ fieldset legend {
 }
 
 select,
+input[type="text"],
 input[type="number"] {
   width: 100%;
   height: 48px;
@@ -1283,15 +1285,167 @@ input[type="number"] {
 }
 
 select:focus,
+input[type="text"]:focus,
 input[type="number"]:focus {
   border-color: var(--srt);
   box-shadow: 0 0 0 3px rgba(116, 31, 43, 0.09);
 }
 
 select.is-invalid,
+input[type="text"].is-invalid,
 input.is-invalid {
   border-color: #bd2c3d;
   box-shadow: 0 0 0 3px rgba(189, 44, 61, 0.08);
+}
+
+.station-combobox {
+  position: relative;
+}
+
+.station-combobox:focus-within {
+  z-index: 20;
+}
+
+.station-combobox input[type="text"] {
+  padding: 0 40px 0 42px;
+  font-size: 13px;
+}
+
+.station-combobox input[type="text"]::placeholder {
+  color: #9a9e9a;
+}
+
+.station-search-icon {
+  position: absolute;
+  z-index: 1;
+  top: 14px;
+  left: 14px;
+  width: 19px;
+  height: 19px;
+  fill: none;
+  stroke: #8c908d;
+  stroke-linecap: round;
+  stroke-width: 1.8;
+  pointer-events: none;
+}
+
+.station-clear {
+  position: absolute;
+  z-index: 2;
+  top: 50%;
+  right: 9px;
+  display: grid;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  place-items: center;
+  border: 0;
+  border-radius: 50%;
+  color: #777e79;
+  background: transparent;
+  cursor: pointer;
+  font-size: 20px;
+  line-height: 1;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-50%);
+}
+
+.station-combobox.has-value .station-clear {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.station-clear:hover,
+.station-clear:focus-visible {
+  color: var(--srt);
+  background: rgba(116, 31, 43, 0.08);
+}
+
+.station-options {
+  position: absolute;
+  z-index: 30;
+  top: calc(100% + 7px);
+  right: 0;
+  left: 0;
+  max-height: 320px;
+  padding: 7px;
+  overflow-y: auto;
+  border: 1px solid #ded5c8;
+  border-radius: 15px;
+  background: rgba(255, 253, 249, 0.98);
+  box-shadow: 0 20px 45px rgba(54, 32, 29, 0.18);
+  scrollbar-color: rgba(116, 31, 43, 0.32) transparent;
+  scrollbar-width: thin;
+  backdrop-filter: blur(18px) saturate(135%);
+}
+
+.station-option {
+  display: flex;
+  width: 100%;
+  min-height: 45px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 10px;
+  border: 0;
+  border-radius: 10px;
+  color: var(--ink);
+  background: transparent;
+  cursor: pointer;
+  text-align: left;
+}
+
+.station-option:hover,
+.station-option.is-active {
+  color: var(--srt);
+  background: #f5ecdd;
+}
+
+.station-option-name {
+  min-width: 0;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.station-option-meta {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 7px;
+}
+
+.station-option-meta b {
+  min-width: 34px;
+  padding: 2px 7px;
+  border: 1px solid rgba(116, 31, 43, 0.18);
+  border-radius: 999px;
+  color: var(--srt);
+  background: #fff9ee;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  text-align: center;
+}
+
+.station-option-meta small {
+  color: #929792;
+  font-size: 8px;
+  white-space: nowrap;
+}
+
+.station-options-empty {
+  margin: 0;
+  padding: 16px 12px;
+  color: #858b87;
+  font-size: 10px;
+  text-align: center;
+}
+
+.station-help {
+  display: block;
+  margin: 5px 2px 0;
+  color: #8a8f8b;
+  font-size: 9px;
 }
 
 .field-error {
@@ -2423,6 +2577,7 @@ input.is-invalid {
 .button,
 .tab,
 label > span,
+.station-field > label,
 fieldset legend,
 .form-section-title {
   font-family: var(--font-heading);
@@ -2728,6 +2883,7 @@ html[data-theme="dark"] h3,
 html[data-theme="dark"] .fact-card strong,
 html[data-theme="dark"] .fact-rule strong,
 html[data-theme="dark"] label > span,
+html[data-theme="dark"] .station-field > label,
 html[data-theme="dark"] fieldset legend {
   color: var(--ink);
 }
@@ -2839,6 +2995,7 @@ html[data-theme="dark"] .route-data-note { border-color: rgba(232, 205, 197, 0.1
 
 html[data-theme="dark"] .tab.is-active,
 html[data-theme="dark"] select,
+html[data-theme="dark"] input[type="text"],
 html[data-theme="dark"] input[type="number"] {
   border-color: rgba(231, 203, 194, 0.16);
   color: var(--ink);
@@ -2848,6 +3005,17 @@ html[data-theme="dark"] input[type="number"] {
 html[data-theme="dark"] select {
   color-scheme: dark;
 }
+
+html[data-theme="dark"] .station-options {
+  border-color: rgba(231, 203, 194, 0.16);
+  background: rgba(35, 23, 27, 0.98);
+  box-shadow: 0 22px 48px rgba(0, 0, 0, 0.4);
+}
+
+html[data-theme="dark"] .station-option:hover,
+html[data-theme="dark"] .station-option.is-active { background: #342228; }
+html[data-theme="dark"] .station-option-meta b { border-color: rgba(231, 203, 194, 0.16); background: #291b20; }
+html[data-theme="dark"] .station-help { color: var(--muted); }
 
 html[data-theme="dark"] .form-section + .form-section,
 html[data-theme="dark"] .calculator-tabs,

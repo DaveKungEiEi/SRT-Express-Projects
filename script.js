@@ -2,7 +2,6 @@
 
 const {
   stations,
-  lineOrder,
   lineLabels,
   getStation,
   getPrimaryLine,
@@ -70,36 +69,188 @@ const elements = {
   routeDataNote: document.querySelector("#route-data-note"),
 };
 
-const nameCounts = stations.reduce((counts, station) => {
-  counts[station.name] = (counts[station.name] || 0) + 1;
-  return counts;
-}, {});
+const excludedStationTypes = new Set(["ที่หยุดรถ", "ป้ายหยุดรถ", "ทีหยุดรถ"]);
+const selectableStations = stations.filter((station) => !excludedStationTypes.has(station.note.trim()));
 
-function createStationOptions(select) {
-  lineOrder.forEach((line) => {
-    const matchingStations = stations.filter((station) => getPrimaryLine(station) === line);
-    if (!matchingStations.length) return;
-    const group = document.createElement("optgroup");
-    group.label = `${lineLabels[line]} (${matchingStations.length})`;
-    matchingStations.forEach((station) => {
-      const option = document.createElement("option");
-      option.value = station.id;
-      const area = nameCounts[station.name] > 1 && station.district
-        ? `${station.district}, ${station.province}`
-        : station.province;
-      option.textContent = `${station.name} — ${area}`;
-      group.append(option);
-    });
-    select.append(group);
-  });
+function normalizeStationSearch(value) {
+  return String(value || "")
+    .trim()
+    .toLocaleLowerCase("th-TH")
+    .replace(/[.\s\-–—()（）]/g, "");
 }
 
-createStationOptions(elements.origin);
-createStationOptions(elements.destination);
+const stationSearchEntries = selectableStations.map((station) => ({
+  station,
+  searchText: normalizeStationSearch(`${station.name} ${station.code || ""}`),
+}));
+
+document.querySelector("#selectable-station-count").textContent = selectableStations.length.toLocaleString("th-TH");
+
+function getSelectedStation(input) {
+  return getStation(input.dataset.stationId || "");
+}
+
+function findExactStation(value) {
+  const query = normalizeStationSearch(value);
+  if (!query) return null;
+  const matches = selectableStations.filter((station) =>
+    normalizeStationSearch(station.name) === query
+    || (station.code && normalizeStationSearch(station.code) === query));
+  return matches.length === 1 ? matches[0] : null;
+}
+
+function updateStationInputState(input) {
+  input.closest("[data-station-combobox]").classList.toggle("has-value", Boolean(input.value));
+}
+
+function closeStationOptions(input) {
+  const list = document.querySelector(`#${input.getAttribute("aria-controls")}`);
+  list.hidden = true;
+  input.setAttribute("aria-expanded", "false");
+  input.removeAttribute("aria-activedescendant");
+}
+
+function setStationInput(input, station) {
+  input.value = station?.name || "";
+  input.dataset.stationId = station?.id || "";
+  updateStationInputState(input);
+  closeStationOptions(input);
+}
+
+function createStationCombobox(input) {
+  const combobox = input.closest("[data-station-combobox]");
+  const list = combobox.querySelector("[role='listbox']");
+  const clearButton = combobox.querySelector(".station-clear");
+  let visibleStations = [];
+  let activeIndex = -1;
+
+  function setActiveOption(index) {
+    const options = Array.from(list.querySelectorAll("[role='option']"));
+    if (!options.length) return;
+    activeIndex = Math.max(0, Math.min(index, options.length - 1));
+    options.forEach((option, optionIndex) => {
+      const active = optionIndex === activeIndex;
+      option.classList.toggle("is-active", active);
+      option.setAttribute("aria-selected", String(active));
+    });
+    const activeOption = options[activeIndex];
+    input.setAttribute("aria-activedescendant", activeOption.id);
+    activeOption.scrollIntoView({ block: "nearest" });
+  }
+
+  function renderOptions(query = "") {
+    const normalizedQuery = normalizeStationSearch(query);
+    visibleStations = stationSearchEntries
+      .filter((entry) => !normalizedQuery || entry.searchText.includes(normalizedQuery))
+      .map((entry) => entry.station);
+    activeIndex = -1;
+    list.replaceChildren();
+
+    if (!visibleStations.length) {
+      const empty = document.createElement("p");
+      empty.className = "station-options-empty";
+      empty.textContent = "ไม่พบสถานีจากชื่อหรือรหัสที่พิมพ์";
+      list.append(empty);
+    } else {
+      visibleStations.forEach((station, index) => {
+        const option = document.createElement("button");
+        option.type = "button";
+        option.id = `${input.id}-option-${station.id}`;
+        option.className = "station-option";
+        option.setAttribute("role", "option");
+        option.setAttribute("aria-selected", "false");
+        option.dataset.stationId = station.id;
+
+        const name = document.createElement("span");
+        name.className = "station-option-name";
+        name.textContent = station.name;
+        const meta = document.createElement("span");
+        meta.className = "station-option-meta";
+        if (station.code) {
+          const code = document.createElement("b");
+          code.textContent = station.code;
+          meta.append(code);
+        }
+        const line = document.createElement("small");
+        line.textContent = lineLabels[getPrimaryLine(station)] || "เครือข่าย รฟท.";
+        meta.append(line);
+        option.append(name, meta);
+        list.append(option);
+      });
+    }
+
+    list.hidden = false;
+    input.setAttribute("aria-expanded", "true");
+  }
+
+  function chooseStation(station) {
+    setStationInput(input, station);
+    clearFieldError(input);
+    updateRoutePreview();
+  }
+
+  function chooseExactMatch() {
+    const station = findExactStation(input.value);
+    if (!station) return false;
+    chooseStation(station);
+    return true;
+  }
+
+  input.addEventListener("focus", () => renderOptions(input.value));
+  input.addEventListener("input", () => {
+    const selected = getSelectedStation(input);
+    if (!selected || input.value !== selected.name) input.dataset.stationId = "";
+    updateStationInputState(input);
+    clearFieldError(input);
+    renderOptions(input.value);
+    updateRoutePreview();
+  });
+  input.addEventListener("keydown", (event) => {
+    if (event.key === "ArrowDown" || event.key === "ArrowUp") {
+      event.preventDefault();
+      if (list.hidden) renderOptions(input.value);
+      setActiveOption(event.key === "ArrowDown" ? activeIndex + 1 : activeIndex <= 0 ? visibleStations.length - 1 : activeIndex - 1);
+    } else if (event.key === "Enter") {
+      if (!list.hidden && activeIndex >= 0 && visibleStations[activeIndex]) {
+        event.preventDefault();
+        chooseStation(visibleStations[activeIndex]);
+      } else if (chooseExactMatch()) {
+        event.preventDefault();
+      }
+    } else if (event.key === "Escape") {
+      closeStationOptions(input);
+    }
+  });
+  input.addEventListener("blur", () => {
+    window.setTimeout(() => {
+      if (!getSelectedStation(input)) chooseExactMatch();
+      closeStationOptions(input);
+    }, 120);
+  });
+
+  list.addEventListener("mousedown", (event) => event.preventDefault());
+  list.addEventListener("click", (event) => {
+    const option = event.target.closest("[data-station-id]");
+    if (!option) return;
+    chooseStation(getStation(option.dataset.stationId));
+    input.focus();
+  });
+  clearButton.addEventListener("click", () => {
+    setStationInput(input, null);
+    clearFieldError(input);
+    updateRoutePreview();
+    input.focus();
+    renderOptions();
+  });
+  updateStationInputState(input);
+}
+
+createStationCombobox(elements.origin);
+createStationCombobox(elements.destination);
 
 function selectedRoute() {
-  const origin = getStation(elements.origin.value);
-  const destination = getStation(elements.destination.value);
+  const origin = getSelectedStation(elements.origin);
+  const destination = getSelectedStation(elements.destination);
   if (!origin || !destination || origin.id === destination.id) return null;
   return { origin, destination, route: getRoute(origin, destination) };
 }
@@ -171,16 +322,21 @@ function validateForm() {
   let valid = true;
   clearFieldError(elements.origin);
   clearFieldError(elements.destination);
+  const origin = getSelectedStation(elements.origin) || findExactStation(elements.origin.value);
+  const destination = getSelectedStation(elements.destination) || findExactStation(elements.destination.value);
 
-  if (!elements.origin.value) {
-    setFieldError(elements.origin, "กรุณาเลือกสถานีต้นทาง");
+  if (origin) setStationInput(elements.origin, origin);
+  if (destination) setStationInput(elements.destination, destination);
+
+  if (!origin) {
+    setFieldError(elements.origin, "กรุณาพิมพ์และเลือกสถานีต้นทางจากรายการ");
     valid = false;
   }
-  if (!elements.destination.value) {
-    setFieldError(elements.destination, "กรุณาเลือกสถานีปลายทาง");
+  if (!destination) {
+    setFieldError(elements.destination, "กรุณาพิมพ์และเลือกสถานีปลายทางจากรายการ");
     valid = false;
   }
-  if (elements.origin.value && elements.origin.value === elements.destination.value) {
+  if (origin && destination && origin.id === destination.id) {
     setFieldError(elements.destination, "สถานีปลายทางต้องต่างจากต้นทาง");
     valid = false;
   }
@@ -392,17 +548,11 @@ function editQuote() {
   elements.form.scrollIntoView({ behavior: "smooth", block: "nearest" });
 }
 
-[elements.origin, elements.destination].forEach((select) => {
-  select.addEventListener("change", () => {
-    clearFieldError(select);
-    updateRoutePreview();
-  });
-});
-
 elements.swap.addEventListener("click", () => {
-  const originValue = elements.origin.value;
-  elements.origin.value = elements.destination.value;
-  elements.destination.value = originValue;
+  const origin = getSelectedStation(elements.origin);
+  const destination = getSelectedStation(elements.destination);
+  setStationInput(elements.origin, destination);
+  setStationInput(elements.destination, origin);
   clearFieldError(elements.origin);
   clearFieldError(elements.destination);
   updateRoutePreview();

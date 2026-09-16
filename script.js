@@ -61,7 +61,11 @@ const elements = {
   resultDisclaimer: document.querySelector("#result-disclaimer"),
   journeyDistance: document.querySelector("#journey-distance"),
   journeyStations: document.querySelector("#journey-stations"),
+  journeyOrigin: document.querySelector("#journey-origin"),
+  journeyDestination: document.querySelector("#journey-destination"),
   journeySummary: document.querySelector("#journey-summary"),
+  routeDetail: document.querySelector("#route-detail"),
+  routeToggleLabel: document.querySelector("#route-toggle-label"),
   routeTimeline: document.querySelector("#route-timeline"),
   routeDataNote: document.querySelector("#route-data-note"),
 };
@@ -220,24 +224,27 @@ function renderJourney(journey, distanceOverride = 0) {
   const scale = distanceOverride && journey.rawKilometers
     ? displayedDistance / journey.rawKilometers
     : 1;
+  const origin = journey.stops[0];
+  const destination = journey.stops[journey.stops.length - 1];
+  const intermediateStops = journey.stops.slice(1, -1);
   elements.journeyDistance.textContent = displayedDistance.toLocaleString("th-TH", { maximumFractionDigits: 1 });
   elements.journeyStations.textContent = journey.stops.length.toLocaleString("th-TH");
+  elements.journeyOrigin.textContent = origin.station.name;
+  elements.journeyDestination.textContent = destination.station.name;
   elements.journeySummary.textContent = journey.forcedHub
-    ? `ผ่าน${routeHubName} · ${journey.stops.length.toLocaleString("th-TH")} สถานี`
-    : `แนวเส้นทางเดียวกัน · ${journey.stops.length.toLocaleString("th-TH")} สถานี`;
+    ? `${intermediateStops.length.toLocaleString("th-TH")} สถานี · ผ่าน${routeHubName}`
+    : `${intermediateStops.length.toLocaleString("th-TH")} สถานีคั่นกลาง`;
+  elements.routeDetail.hidden = intermediateStops.length === 0;
+  elements.routeDetail.open = false;
+  elements.routeToggleLabel.textContent = "ดูสถานีระหว่างทาง";
   elements.routeTimeline.replaceChildren();
 
-  let cumulativeDistance = 0;
-  journey.stops.forEach((stop, index) => {
+  intermediateStops.forEach((stop) => {
     const distanceFromPrevious = stop.distanceFromPrevious * scale;
-    cumulativeDistance += distanceFromPrevious;
-    const isOrigin = index === 0;
-    const isDestination = index === journey.stops.length - 1;
+    const cumulativeDistance = stop.cumulativeKilometers * scale;
     const isHub = stop.station.id === journey.hubId;
     const item = document.createElement("li");
     item.className = "route-stop";
-    if (isOrigin) item.classList.add("is-origin");
-    if (isDestination) item.classList.add("is-destination");
     if (isHub) item.classList.add("is-hub");
     if (stop.transfer) item.classList.add("is-transfer");
 
@@ -255,14 +262,11 @@ function renderJourney(journey, distanceOverride = 0) {
       heading.append(badge);
     }
     const meta = document.createElement("small");
-    if (isOrigin) {
-      meta.textContent = "สถานีต้นทาง";
-    } else if (stop.transfer) {
+    if (stop.transfer) {
       meta.textContent = `${stop.transferLabel} · ประมาณ ${formatKilometers(distanceFromPrevious)} กม.`;
     } else {
       meta.textContent = `จากสถานีก่อนหน้า ${formatKilometers(distanceFromPrevious)} กม. · สะสม ${formatKilometers(cumulativeDistance)} กม.`;
     }
-    if (isDestination) meta.textContent += " · สถานีปลายทาง";
     content.append(heading, meta);
     item.append(marker, content);
     elements.routeTimeline.append(item);
@@ -415,6 +419,11 @@ elements.optionalToggle.addEventListener("click", () => {
 });
 
 elements.form.addEventListener("submit", calculateQuote);
+elements.routeDetail.addEventListener("toggle", () => {
+  elements.routeToggleLabel.textContent = elements.routeDetail.open
+    ? "ซ่อนสถานีระหว่างทาง"
+    : "ดูสถานีระหว่างทาง";
+});
 document.querySelector("#edit-quote").addEventListener("click", editQuote);
 document.querySelector("#edit-manual").addEventListener("click", editQuote);
 document.querySelector("#print-quote").addEventListener("click", () => window.print());

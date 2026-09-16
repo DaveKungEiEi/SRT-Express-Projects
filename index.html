@@ -384,10 +384,26 @@
                 </span>
                 <span><small>กรอบเวลาตามแบบจำลอง</small><strong id="delivery-time">ภายใน 24 ชั่วโมง*</strong></span>
               </div>
-              <details class="route-detail" open>
+              <div class="route-endpoints" aria-label="สถานีต้นทางและสถานีปลายทาง">
+                <div class="route-endpoint route-endpoint-origin">
+                  <span class="route-endpoint-marker" aria-hidden="true"></span>
+                  <small>ต้นทาง</small>
+                  <strong id="journey-origin">-</strong>
+                </div>
+                <div class="route-endpoint-rail" aria-hidden="true">
+                  <span></span>
+                  <svg viewBox="0 0 24 24"><path d="M5 12h14m-4-4 4 4-4 4" /></svg>
+                </div>
+                <div class="route-endpoint route-endpoint-destination">
+                  <span class="route-endpoint-marker" aria-hidden="true"></span>
+                  <small>ปลายทาง</small>
+                  <strong id="journey-destination">-</strong>
+                </div>
+              </div>
+              <details class="route-detail" id="route-detail">
                 <summary>
-                  <span>สถานีที่รถผ่าน</span>
-                  <b id="journey-summary">ลำดับเส้นทางโดยประมาณ</b>
+                  <span id="route-toggle-label">ดูสถานีระหว่างทาง</span>
+                  <b id="journey-summary">สถานีคั่นกลางตามแนวเส้นทาง</b>
                   <svg viewBox="0 0 20 20" aria-hidden="true"><path d="m5 8 5 5 5-5" /></svg>
                 </summary>
                 <ol class="route-timeline" id="route-timeline"></ol>
